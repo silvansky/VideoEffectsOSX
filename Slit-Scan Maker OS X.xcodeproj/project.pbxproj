@@ -9,21 +9,42 @@
 /* Begin PBXBuildFile section */
 		A359C88D1C316B0D0072EB21 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A359C88C1C316B0D0072EB21 /* AppDelegate.m */; };
 		A359C8901C316B0D0072EB21 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A359C88F1C316B0D0072EB21 /* main.m */; };
-		A359C8931C316B0D0072EB21 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A359C8921C316B0D0072EB21 /* ViewController.m */; };
 		A359C8951C316B0D0072EB21 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A359C8941C316B0D0072EB21 /* Assets.xcassets */; };
 		A359C8981C316B0D0072EB21 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A359C8961C316B0D0072EB21 /* Main.storyboard */; };
+		A359C8A01C316D240072EB21 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A359C89F1C316D240072EB21 /* AVFoundation.framework */; };
+		A359C8A21C316D290072EB21 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A359C8A11C316D290072EB21 /* AVKit.framework */; };
+		A370BED11C565B4600B8E84B /* SlitScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BED01C565B4600B8E84B /* SlitScanViewController.m */; };
+		A370BED41C565B5700B8E84B /* RollingShutterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BED31C565B5700B8E84B /* RollingShutterViewController.m */; };
+		A370BED71C565B5F00B8E84B /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BED61C565B5F00B8E84B /* LogViewController.m */; };
+		A370BEDA1C565B6B00B8E84B /* StartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BED91C565B6B00B8E84B /* StartViewController.m */; };
+		A370BEE21C565E4B00B8E84B /* SourceVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BEE11C565E4B00B8E84B /* SourceVideoView.m */; };
+		EC2D6C49ACD3235CD674CB94 /* libPods-Slit-Scan Maker OS X.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15D3C30664C1166C25FED6F5 /* libPods-Slit-Scan Maker OS X.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		15D3C30664C1166C25FED6F5 /* libPods-Slit-Scan Maker OS X.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Slit-Scan Maker OS X.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		32F6D6A4C30E6A83A9F247B4 /* Pods-Slit-Scan Maker OS X.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Slit-Scan Maker OS X.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Slit-Scan Maker OS X/Pods-Slit-Scan Maker OS X.debug.xcconfig"; sourceTree = "<group>"; };
+		6DDDB964857B57A353476C3A /* Pods-Slit-Scan Maker OS X.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Slit-Scan Maker OS X.release.xcconfig"; path = "Pods/Target Support Files/Pods-Slit-Scan Maker OS X/Pods-Slit-Scan Maker OS X.release.xcconfig"; sourceTree = "<group>"; };
 		A359C8881C316B0D0072EB21 /* Slit-Scan Maker OS X.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Slit-Scan Maker OS X.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A359C88B1C316B0D0072EB21 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A359C88C1C316B0D0072EB21 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		A359C88F1C316B0D0072EB21 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		A359C8911C316B0D0072EB21 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		A359C8921C316B0D0072EB21 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		A359C8941C316B0D0072EB21 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A359C8971C316B0D0072EB21 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A359C8991C316B0D0072EB21 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A359C89F1C316D240072EB21 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A359C8A11C316D290072EB21 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		A370BECF1C565B4600B8E84B /* SlitScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlitScanViewController.h; sourceTree = "<group>"; };
+		A370BED01C565B4600B8E84B /* SlitScanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlitScanViewController.m; sourceTree = "<group>"; };
+		A370BED21C565B5700B8E84B /* RollingShutterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RollingShutterViewController.h; sourceTree = "<group>"; };
+		A370BED31C565B5700B8E84B /* RollingShutterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RollingShutterViewController.m; sourceTree = "<group>"; };
+		A370BED51C565B5F00B8E84B /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
+		A370BED61C565B5F00B8E84B /* LogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewController.m; sourceTree = "<group>"; };
+		A370BED81C565B6B00B8E84B /* StartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartViewController.h; sourceTree = "<group>"; };
+		A370BED91C565B6B00B8E84B /* StartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController.m; sourceTree = "<group>"; };
+		A370BEDB1C565BE500B8E84B /* Common.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.pch; sourceTree = "<group>"; };
+		A370BEE01C565E4B00B8E84B /* SourceVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceVideoView.h; sourceTree = "<group>"; };
+		A370BEE11C565E4B00B8E84B /* SourceVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceVideoView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,17 +52,32 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A359C8A21C316D290072EB21 /* AVKit.framework in Frameworks */,
+				A359C8A01C316D240072EB21 /* AVFoundation.framework in Frameworks */,
+				EC2D6C49ACD3235CD674CB94 /* libPods-Slit-Scan Maker OS X.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3E427BE27E39F9AF3B415900 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A359C8A11C316D290072EB21 /* AVKit.framework */,
+				A359C89F1C316D240072EB21 /* AVFoundation.framework */,
+				15D3C30664C1166C25FED6F5 /* libPods-Slit-Scan Maker OS X.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A359C87F1C316B0D0072EB21 = {
 			isa = PBXGroup;
 			children = (
 				A359C88A1C316B0D0072EB21 /* Slit-Scan Maker OS X */,
 				A359C8891C316B0D0072EB21 /* Products */,
+				B3D2EC08BA8001C065593AD9 /* Pods */,
+				3E427BE27E39F9AF3B415900 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -56,10 +92,10 @@
 		A359C88A1C316B0D0072EB21 /* Slit-Scan Maker OS X */ = {
 			isa = PBXGroup;
 			children = (
+				A370BEDF1C565E2E00B8E84B /* Views */,
 				A359C88B1C316B0D0072EB21 /* AppDelegate.h */,
 				A359C88C1C316B0D0072EB21 /* AppDelegate.m */,
-				A359C8911C316B0D0072EB21 /* ViewController.h */,
-				A359C8921C316B0D0072EB21 /* ViewController.m */,
+				A370BEDC1C565C2A00B8E84B /* View Controllers */,
 				A359C8941C316B0D0072EB21 /* Assets.xcassets */,
 				A359C8961C316B0D0072EB21 /* Main.storyboard */,
 				A359C8991C316B0D0072EB21 /* Info.plist */,
@@ -72,8 +108,58 @@
 			isa = PBXGroup;
 			children = (
 				A359C88F1C316B0D0072EB21 /* main.m */,
+				A370BEDB1C565BE500B8E84B /* Common.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A370BEDC1C565C2A00B8E84B /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				A370BEDE1C565C4100B8E84B /* Main */,
+				A370BEDD1C565C3B00B8E84B /* Utility */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		A370BEDD1C565C3B00B8E84B /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				A370BED51C565B5F00B8E84B /* LogViewController.h */,
+				A370BED61C565B5F00B8E84B /* LogViewController.m */,
+				A370BED81C565B6B00B8E84B /* StartViewController.h */,
+				A370BED91C565B6B00B8E84B /* StartViewController.m */,
+			);
+			name = Utility;
+			sourceTree = "<group>";
+		};
+		A370BEDE1C565C4100B8E84B /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				A370BECF1C565B4600B8E84B /* SlitScanViewController.h */,
+				A370BED01C565B4600B8E84B /* SlitScanViewController.m */,
+				A370BED21C565B5700B8E84B /* RollingShutterViewController.h */,
+				A370BED31C565B5700B8E84B /* RollingShutterViewController.m */,
+			);
+			name = Main;
+			sourceTree = "<group>";
+		};
+		A370BEDF1C565E2E00B8E84B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A370BEE01C565E4B00B8E84B /* SourceVideoView.h */,
+				A370BEE11C565E4B00B8E84B /* SourceVideoView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		B3D2EC08BA8001C065593AD9 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				32F6D6A4C30E6A83A9F247B4 /* Pods-Slit-Scan Maker OS X.debug.xcconfig */,
+				6DDDB964857B57A353476C3A /* Pods-Slit-Scan Maker OS X.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -83,9 +169,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A359C89C1C316B0D0072EB21 /* Build configuration list for PBXNativeTarget "Slit-Scan Maker OS X" */;
 			buildPhases = (
+				AE1844DA46D053AC4F5594C8 /* Check Pods Manifest.lock */,
 				A359C8841C316B0D0072EB21 /* Sources */,
 				A359C8851C316B0D0072EB21 /* Frameworks */,
 				A359C8861C316B0D0072EB21 /* Resources */,
+				AD16B19EB26E967CE470E626 /* Embed Pods Frameworks */,
+				EB1D4864FE62C2DBC9E31C9C /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -140,14 +229,66 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AD16B19EB26E967CE470E626 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Slit-Scan Maker OS X/Pods-Slit-Scan Maker OS X-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AE1844DA46D053AC4F5594C8 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		EB1D4864FE62C2DBC9E31C9C /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Slit-Scan Maker OS X/Pods-Slit-Scan Maker OS X-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A359C8841C316B0D0072EB21 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A359C8931C316B0D0072EB21 /* ViewController.m in Sources */,
 				A359C8901C316B0D0072EB21 /* main.m in Sources */,
+				A370BED41C565B5700B8E84B /* RollingShutterViewController.m in Sources */,
+				A370BEE21C565E4B00B8E84B /* SourceVideoView.m in Sources */,
+				A370BEDA1C565B6B00B8E84B /* StartViewController.m in Sources */,
 				A359C88D1C316B0D0072EB21 /* AppDelegate.m in Sources */,
+				A370BED11C565B4600B8E84B /* SlitScanViewController.m in Sources */,
+				A370BED71C565B5F00B8E84B /* LogViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,9 +387,12 @@
 		};
 		A359C89D1C316B0D0072EB21 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 32F6D6A4C30E6A83A9F247B4 /* Pods-Slit-Scan Maker OS X.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Slit-Scan Maker OS X/Common.pch";
 				INFOPLIST_FILE = "Slit-Scan Maker OS X/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.songsterr.Slit-Scan-Maker-OS-X";
@@ -258,9 +402,12 @@
 		};
 		A359C89E1C316B0D0072EB21 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6DDDB964857B57A353476C3A /* Pods-Slit-Scan Maker OS X.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Slit-Scan Maker OS X/Common.pch";
 				INFOPLIST_FILE = "Slit-Scan Maker OS X/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.songsterr.Slit-Scan-Maker-OS-X";
@@ -287,6 +434,7 @@
 				A359C89E1C316B0D0072EB21 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
