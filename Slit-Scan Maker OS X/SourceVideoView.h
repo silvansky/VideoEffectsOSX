@@ -11,5 +11,8 @@
 @interface SourceVideoView : NSView
 
 @property (nonatomic, strong, readonly) RACSignal *draggedFilesSignal;
+@property (nonatomic, assign) BOOL locked;
+
+- (void)updatePreview:(NSImage *)preview;
 
 @end

@@ -45,6 +45,7 @@
 		A370BEDB1C565BE500B8E84B /* Common.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.pch; sourceTree = "<group>"; };
 		A370BEE01C565E4B00B8E84B /* SourceVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceVideoView.h; sourceTree = "<group>"; };
 		A370BEE11C565E4B00B8E84B /* SourceVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceVideoView.m; sourceTree = "<group>"; };
+		A370BEE31C56746300B8E84B /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +65,7 @@
 		3E427BE27E39F9AF3B415900 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A370BEE31C56746300B8E84B /* MediaToolbox.framework */,
 				A359C8A11C316D290072EB21 /* AVKit.framework */,
 				A359C89F1C316D240072EB21 /* AVFoundation.framework */,
 				15D3C30664C1166C25FED6F5 /* libPods-Slit-Scan Maker OS X.a */,

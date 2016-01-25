@@ -41,6 +41,12 @@
 	return self.draggedFilesSubject;
 }
 
+- (void)updatePreview:(NSImage *)preview
+{
+	self.previewImage = preview;
+	[self setNeedsDisplay:YES];
+}
+
 #pragma mark - Drag
 
 + (NSArray *)supportedExtensions
@@ -81,6 +87,11 @@
 
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
+	if (self.locked)
+	{
+		return NSDragOperationNone;
+	}
+
 	NSString *file = [SourceVideoView fileNameForDragged:sender];
 
 	self.draggingInProgress = file ? YES : NO;
@@ -141,7 +152,7 @@
 
 	if (self.draggingInProgress)
 	{
-		[[NSColor colorWithRed:0 green:0 blue:1 alpha:0.2] setFill];
+		[[NSColor colorWithRed:0.3 green:0.4 blue:1 alpha:0.2] setFill];
 		NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
 	}
 }
