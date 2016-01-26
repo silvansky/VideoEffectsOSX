@@ -21,10 +21,16 @@
 @property (weak) IBOutlet NSBox *slitModeBox;
 @property (weak) IBOutlet NSBox *slitMoveDirectionBox;
 @property (weak) IBOutlet NSBox *slitTypeBox;
+@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 
 @property (nonatomic, strong) AVURLAsset *currentAsset;
+@property (nonatomic, assign) NSSize currentImageSize;
+@property (nonatomic, assign) BOOL movingLine;
+@property (nonatomic, assign) NSInteger currentLine;
+@property (atomic, strong) NSImage *internalPartialImg;
 
 - (void)processAsset:(AVURLAsset *)asset;
+- (void)saveCurrentImage;
 
 @end
 
@@ -48,8 +54,10 @@
 		NSSize size;
 		size.width = CGImageGetWidth(cgImage);
 		size.height = CGImageGetHeight(cgImage);
+		self.currentImageSize = size;
 		[self.sourceVideoView updatePreview:[[NSImage alloc] initWithCGImage:cgImage size:size]];
 		[self processAsset:asset];
+		CGImageRelease(cgImage);
 	}];
 }
 
@@ -82,6 +90,7 @@
 
 	if (!context)
 	{
+		CGColorSpaceRelease(colorSpace);
 		return nil;
 	}
 
@@ -104,50 +113,150 @@
 	return (image);
 }
 
+- (NSImage *)partialImageWithSource:(NSImage *)source
+{
+	if (source == nil)
+	{
+		return nil;
+	}
+
+	CGImageRef sourceQuartzImage = [source CGImageForProposedRect:nil context:nil hints:nil];
+	size_t width = CGImageGetWidth(sourceQuartzImage);
+	size_t height = CGImageGetHeight(sourceQuartzImage);
+	CGSize size = CGSizeMake((CGFloat)width, (CGFloat)height);
+	CGRect rect;
+	rect.origin = CGPointMake(0.f, 0.f);
+	rect.size = size;
+
+	CGRect lineRect = self.movingLine ? CGRectMake((CGFloat)self.currentLine, 0.f, 1.f, (CGFloat)height) : CGRectMake((CGFloat)(width / 2.f), 0.f, 1.f, (CGFloat)height);
+	CGRect lineDrawRect = CGRectMake((CGFloat)self.currentLine, 0.f, 1.f, (CGFloat)height);
+	CGRect cursorLineRect = lineDrawRect;
+	cursorLineRect.origin.x += 1.f;
+
+	CGImageRef line = CGImageCreateWithImageInRect(sourceQuartzImage, lineRect);
+
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 0, colorSpace, kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedFirst);
+
+	if (!ctx)
+	{
+		NSLog(@"WTF!");
+	}
+
+	if (self.internalPartialImg)
+	{
+		CGContextDrawImage(ctx, rect, [self.internalPartialImg CGImageForProposedRect:nil context:nil hints:nil]);
+	}
+
+	CGContextDrawImage(ctx, lineDrawRect, line);
+
+//	CGContextSetFillColorWithColor(ctx, [NSColor colorWithRed:(117.f/255.f) green:(205.f/255.f) blue:0.f alpha:1.f].CGColor);
+//	CGContextFillRect(ctx, cursorLineRect);
+
+	NSImage *image = nil;
+
+	CGImageRef quartzImage = CGBitmapContextCreateImage(ctx);
+
+	CGContextRelease(ctx);
+	CGColorSpaceRelease(colorSpace);
+
+	image = [[NSImage alloc] initWithCGImage:quartzImage size:size];
+
+	CGImageRelease(quartzImage);
+	CGImageRelease(line);
+
+	return image;
+}
+
 - (void)processAsset:(AVURLAsset *)asset
 {
 	self.currentAsset = asset;
 	@weakify(self);
 	dispatch_async(dispatch_queue_create("prc", DISPATCH_QUEUE_SERIAL), ^{
-		@strongify(self);
-		NSError *error = nil;
-		AVAssetReader *assetReader = [[AVAssetReader alloc] initWithAsset:self.currentAsset error:&error];
-		AVAssetTrack *videoTrack = [self.currentAsset tracksWithMediaType:AVMediaTypeVideo][0];
-		NSDictionary *dict = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+		@autoreleasepool {
+			@strongify(self);
+			NSError *error = nil;
+			AVAssetReader *assetReader = [[AVAssetReader alloc] initWithAsset:self.currentAsset error:&error];
+			AVAssetTrack *videoTrack = [self.currentAsset tracksWithMediaType:AVMediaTypeVideo][0];
+			NSDictionary *dict = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
 
-		AVAssetReaderTrackOutput *assetReaderOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:videoTrack outputSettings:dict];
+			AVAssetReaderTrackOutput *assetReaderOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:videoTrack outputSettings:dict];
 
-		NSInteger i = 0;
-		if ([assetReader canAddOutput:assetReaderOutput])
-		{
-			[assetReader addOutput:assetReaderOutput];
-			if ([assetReader startReading])
+			NSInteger i = 0;
+			self.currentLine = 0;
+			NSDate *startDate = [NSDate date];
+			if ([assetReader canAddOutput:assetReaderOutput])
 			{
-				self.sourceVideoView.locked = YES;
-
-				/* read off the samples */
-				CMSampleBufferRef buffer;
-				while ([assetReader status] == AVAssetReaderStatusReading)
+				[assetReader addOutput:assetReaderOutput];
+				if ([assetReader startReading])
 				{
-					buffer = [assetReaderOutput copyNextSampleBuffer];
-					NSImage *currentImage = [self imageFromSampleBuffer:buffer];
-					if (currentImage)
-					{
-						[self.sourceVideoView updatePreview:currentImage];
-					}
-					i++;
-//					NSLog(@"decoding frame #%ld done. %@", i, currentImage);
-				}
+					dispatch_sync(dispatch_get_main_queue(), ^{
+						self.sourceVideoView.locked = YES;
+						[self.progressIndicator startAnimation:nil];
+					});
 
-				self.sourceVideoView.locked = NO;
-			}
-			else
-			{
-				NSLog(@"could not start reading asset.");
-				NSLog(@"reader status: %ld", [assetReader status]);
+					/* read off the samples */
+					CMSampleBufferRef buffer;
+					while ([assetReader status] == AVAssetReaderStatusReading)
+					{
+						@autoreleasepool {
+							buffer = [assetReaderOutput copyNextSampleBuffer];
+							NSImage *currentImage = [self imageFromSampleBuffer:buffer];
+							NSImage *partialImage = [self partialImageWithSource:currentImage];
+							if (partialImage != nil)
+							{
+								self.internalPartialImg = partialImage;
+							}
+							if (partialImage && (i % 100 == 0))
+							{
+								dispatch_async(dispatch_get_main_queue(), ^{
+									@autoreleasepool {
+										[self.sourceVideoView updatePreview:currentImage];
+										self.resultingImageView.image = partialImage;
+									}
+								});
+							}
+							i++;
+							self.currentLine++;
+							if (self.currentLine > self.currentImageSize.width)
+							{
+								self.currentLine = 0;
+								[self saveCurrentImage];
+								self.internalPartialImg = nil;
+							}
+						}
+					}
+
+					NSDate *endDate = [NSDate date];
+					NSTimeInterval duration = [endDate timeIntervalSinceDate:startDate];
+					[self saveCurrentImage];
+					NSLog(@"Processed %@ frames in %@ seconds, FPS: %@", @(i), @(duration), @(i/duration));
+
+					dispatch_async(dispatch_get_main_queue(), ^{
+						@autoreleasepool {
+							self.sourceVideoView.locked = NO;
+							[self.progressIndicator stopAnimation:nil];
+						}
+					});
+				}
+				else
+				{
+					NSLog(@"could not start reading asset.");
+					NSLog(@"reader status: %ld", [assetReader status]);
+				}
 			}
 		}
 	});
+}
+
+- (void)saveCurrentImage
+{
+	NSData *imageData = [self.internalPartialImg TIFFRepresentation];
+	NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imageData];
+	NSData *data = [imageRep representationUsingType:NSPNGFileType properties:@{}];
+	NSString *fileName = [NSString stringWithFormat:@"/Users/valentine/Pictures/SSM/slit-scan-%@.png", @([[NSDate date] timeIntervalSince1970])];
+	BOOL ok = [data writeToFile:fileName atomically:NO];
+	NSLog(@"Saved image to %@ (%@)", fileName, @(ok));
 }
 
 @end

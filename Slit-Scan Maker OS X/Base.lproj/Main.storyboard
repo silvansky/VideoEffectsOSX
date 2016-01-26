@@ -751,9 +751,6 @@
                                     <constraint firstAttribute="height" constant="148" id="bAD-4w-dsQ"/>
                                 </constraints>
                             </customView>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="19h-KR-GxH" customClass="NSImageView">
-                                <rect key="frame" x="262" y="213" width="349" height="148"/>
-                            </customView>
                             <box title="Slit Mode" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="6yR-Ur-AyG">
                                 <rect key="frame" x="17" y="109" width="177" height="96"/>
                                 <view key="contentView" id="XBN-uW-tRc">
@@ -797,7 +794,7 @@
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
-                            <box title="Slit Move Direction" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="vb9-Of-Ve0">
+                            <box ambiguous="YES" misplaced="YES" title="Slit Move Direction" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="vb9-Of-Ve0">
                                 <rect key="frame" x="196" y="70" width="177" height="135"/>
                                 <view key="contentView" id="mSN-2b-B6A">
                                     <rect key="frame" x="1" y="1" width="175" height="119"/>
@@ -866,7 +863,7 @@
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
-                            <box title="Slit Type" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="27K-g1-EgD">
+                            <box ambiguous="YES" misplaced="YES" title="Slit Type" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="27K-g1-EgD">
                                 <rect key="frame" x="375" y="109" width="177" height="96"/>
                                 <view key="contentView" id="nnZ-DK-l2k">
                                     <rect key="frame" x="1" y="1" width="175" height="80"/>
@@ -909,24 +906,39 @@
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DDg-ql-8FZ">
+                                <rect key="frame" x="262" y="213" width="349" height="148"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="800" id="bKE-sw-oqB"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="5li-te-fwi"/>
+                            </imageView>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="dWd-s1-fcr">
+                                <rect key="frame" x="428" y="279" width="16" height="16"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="16" id="Mqo-oo-KW6"/>
+                                    <constraint firstAttribute="width" constant="16" id="wlw-S7-Zyy"/>
+                                </constraints>
+                            </progressIndicator>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="DDg-ql-8FZ" firstAttribute="bottom" secondItem="PZH-Zu-gr5" secondAttribute="bottom" id="5ZT-YS-HH9"/>
                             <constraint firstItem="27K-g1-EgD" firstAttribute="leading" secondItem="vb9-Of-Ve0" secondAttribute="trailing" constant="8" id="8SJ-0u-XOg"/>
-                            <constraint firstItem="19h-KR-GxH" firstAttribute="top" secondItem="IyF-0m-Uwj" secondAttribute="top" constant="20" id="8wp-yj-AUT"/>
+                            <constraint firstItem="dWd-s1-fcr" firstAttribute="centerY" secondItem="DDg-ql-8FZ" secondAttribute="centerY" id="D6E-Na-sgz"/>
                             <constraint firstItem="PZH-Zu-gr5" firstAttribute="leading" secondItem="IyF-0m-Uwj" secondAttribute="leading" constant="20" id="Fb5-FE-Bov"/>
                             <constraint firstItem="6yR-Ur-AyG" firstAttribute="top" secondItem="PZH-Zu-gr5" secondAttribute="bottom" constant="8" id="PWA-H7-oo4"/>
-                            <constraint firstItem="19h-KR-GxH" firstAttribute="leading" secondItem="PZH-Zu-gr5" secondAttribute="trailing" constant="8" id="YYU-Cz-rLb"/>
-                            <constraint firstItem="27K-g1-EgD" firstAttribute="top" secondItem="19h-KR-GxH" secondAttribute="bottom" constant="8" id="emU-hY-9pA"/>
-                            <constraint firstItem="vb9-Of-Ve0" firstAttribute="top" secondItem="19h-KR-GxH" secondAttribute="bottom" constant="8" id="evz-vu-vlp"/>
-                            <constraint firstAttribute="trailing" secondItem="19h-KR-GxH" secondAttribute="trailing" constant="20" id="nS8-Ql-pDM"/>
+                            <constraint firstItem="DDg-ql-8FZ" firstAttribute="top" secondItem="IyF-0m-Uwj" secondAttribute="top" constant="20" id="V6J-fY-RRp"/>
+                            <constraint firstItem="dWd-s1-fcr" firstAttribute="centerX" secondItem="DDg-ql-8FZ" secondAttribute="centerX" id="Yil-qF-ind"/>
+                            <constraint firstAttribute="trailing" secondItem="DDg-ql-8FZ" secondAttribute="trailing" constant="20" id="fOk-5D-09n"/>
                             <constraint firstItem="PZH-Zu-gr5" firstAttribute="top" secondItem="IyF-0m-Uwj" secondAttribute="top" constant="20" id="rLJ-I6-hXZ"/>
                             <constraint firstItem="6yR-Ur-AyG" firstAttribute="leading" secondItem="IyF-0m-Uwj" secondAttribute="leading" constant="20" id="sLr-MY-UzD"/>
-                            <constraint firstItem="19h-KR-GxH" firstAttribute="bottom" secondItem="PZH-Zu-gr5" secondAttribute="bottom" id="xv6-jf-Hh5"/>
+                            <constraint firstItem="DDg-ql-8FZ" firstAttribute="leading" secondItem="PZH-Zu-gr5" secondAttribute="trailing" constant="8" id="uA0-l7-jJ5"/>
                             <constraint firstItem="vb9-Of-Ve0" firstAttribute="leading" secondItem="6yR-Ur-AyG" secondAttribute="trailing" constant="8" id="yjl-rC-XJT"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="resultingImageView" destination="19h-KR-GxH" id="bj2-ID-bWL"/>
+                        <outlet property="progressIndicator" destination="dWd-s1-fcr" id="VBK-Gl-VOm"/>
+                        <outlet property="resultingImageView" destination="DDg-ql-8FZ" id="Qrf-Id-NPO"/>
                         <outlet property="slitModeBox" destination="6yR-Ur-AyG" id="2XA-Ih-rx1"/>
                         <outlet property="slitMoveDirectionBox" destination="vb9-Of-Ve0" id="uy8-lB-6Fw"/>
                         <outlet property="slitTypeBox" destination="27K-g1-EgD" id="xJV-gF-Iqx"/>
