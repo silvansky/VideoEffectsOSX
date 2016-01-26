@@ -172,8 +172,9 @@
 {
 	self.currentAsset = asset;
 	@weakify(self);
-	dispatch_async(dispatch_queue_create("prc", DISPATCH_QUEUE_SERIAL), ^{
-		@autoreleasepool {
+	dispatch_async(dispatch_queue_create("processAsset", DISPATCH_QUEUE_SERIAL), ^{
+		@autoreleasepool
+		{
 			@strongify(self);
 			NSError *error = nil;
 			AVAssetReader *assetReader = [[AVAssetReader alloc] initWithAsset:self.currentAsset error:&error];
@@ -199,7 +200,8 @@
 					CMSampleBufferRef buffer;
 					while ([assetReader status] == AVAssetReaderStatusReading)
 					{
-						@autoreleasepool {
+						@autoreleasepool
+						{
 							buffer = [assetReaderOutput copyNextSampleBuffer];
 							NSImage *currentImage = [self imageFromSampleBuffer:buffer];
 							NSImage *partialImage = [self partialImageWithSource:currentImage];
@@ -224,12 +226,17 @@
 								[self saveCurrentImage];
 								self.internalPartialImg = nil;
 							}
-						}
+							if (buffer != NULL)
+							{
+								CFRelease(buffer);
+							}
+						} // pool
 					}
 
 					NSDate *endDate = [NSDate date];
 					NSTimeInterval duration = [endDate timeIntervalSinceDate:startDate];
 					[self saveCurrentImage];
+					self.internalPartialImg = nil;
 					NSLog(@"Processed %@ frames in %@ seconds, FPS: %@", @(i), @(duration), @(i/duration));
 
 					dispatch_async(dispatch_get_main_queue(), ^{
