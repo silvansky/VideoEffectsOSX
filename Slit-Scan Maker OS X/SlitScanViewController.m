@@ -59,7 +59,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) BOOL verticalSlit;
 @property (nonatomic, assign) NSInteger currentLine;
 @property (atomic, strong) NSImage *internalPartialImg;
+@property (atomic, strong) NSImage *originalPreviewImage;
 @property (nonatomic, assign) BOOL processing;
+@property (nonatomic, assign) BOOL stopAfterNextFrame;
 @property (nonatomic, assign) MovingSlitDirection slitDirection;
 
 - (void)processAsset:(AVURLAsset *)asset;
@@ -135,29 +137,44 @@ typedef enum : NSUInteger {
 	[self.sourceVideoView.draggedFilesSignal subscribeNext:^(NSString *file) {
 		@strongify(self);
 		NSLog(@"Got video file: %@", file);
+
 		AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:file] options:nil];
 		AVAssetImageGenerator *imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
 		[imageGenerator setAppliesPreferredTrackTransform:YES];
+
 		CGImageRef cgImage = [imageGenerator copyCGImageAtTime:CMTimeMake(0, 1) actualTime:nil error:nil];
+
 		NSSize size;
 		size.width = CGImageGetWidth(cgImage);
 		size.height = CGImageGetHeight(cgImage);
+
 		self.currentImageSize = size;
-		[self.sourceVideoView updatePreview:[[NSImage alloc] initWithCGImage:cgImage size:size]];
+
+		self.originalPreviewImage = [[NSImage alloc] initWithCGImage:cgImage size:size];
+		[self.sourceVideoView updatePreview:self.originalPreviewImage];
+
 		self.currentAsset = asset;
 		CGImageRelease(cgImage);
 	}];
 
-	self.startButton.rac_command = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id __unused input) {
+	RACCommand *cmd = [[RACCommand alloc] initWithEnabled:[RACObserve(self, currentAsset) map:^id(id value) {
+		return @(value != nil);
+	}] signalBlock:^RACSignal *(id input) {
 		@strongify(self);
-		if (self.currentAsset != nil)
+		if (!self.processing)
 		{
 			self.processing = YES;
+			self.startButton.title = @"Stop";
 			[self updateBoxes];
 			[self processAsset:self.currentAsset];
 		}
+		else
+		{
+			self.stopAfterNextFrame = YES;
+		}
 		return [RACSignal empty];
 	}];
+	self.startButton.rac_command = cmd;
 
 	[self.slitPositionSlider bind:@"value" toObject:self.sourceVideoView withKeyPath:@"slitPosition" options:nil];
 }
@@ -352,12 +369,15 @@ typedef enum : NSUInteger {
 						@autoreleasepool
 						{
 							buffer = [assetReaderOutput copyNextSampleBuffer];
+
 							NSImage *currentImage = [self imageFromSampleBuffer:buffer];
 							NSImage *partialImage = [self partialImageWithSource:currentImage];
+
 							if (partialImage != nil)
 							{
 								self.internalPartialImg = partialImage;
 							}
+
 							if (partialImage && (i % 100 == 0))
 							{
 								dispatch_async(dispatch_get_main_queue(), ^{
@@ -367,19 +387,28 @@ typedef enum : NSUInteger {
 									}
 								});
 							}
+
 							i++;
 							self.currentLine++;
+
 							BOOL verticalSlit = ((!self.movingLine && self.verticalSlit) || (self.movingLine && (self.slitDirection == LeftToRight || self.slitDirection == RightToLeft)));
 							CGFloat maxLines = (verticalSlit ? self.currentImageSize.width : self.currentImageSize.height);
+
 							if (self.currentLine > maxLines)
 							{
 								self.currentLine = 0;
 								[self saveCurrentImage];
 								self.internalPartialImg = nil;
 							}
+
 							if (buffer != NULL)
 							{
 								CFRelease(buffer);
+							}
+							if (self.stopAfterNextFrame)
+							{
+								self.stopAfterNextFrame = NO;
+								break;
 							}
 						} // pool
 					}
@@ -395,6 +424,8 @@ typedef enum : NSUInteger {
 							self.sourceVideoView.locked = NO;
 							[self.progressIndicator stopAnimation:nil];
 							self.processing = NO;
+							self.startButton.title = @"Start";
+							[self.sourceVideoView updatePreview:self.originalPreviewImage];
 							[self updateBoxes];
 						}
 					});
