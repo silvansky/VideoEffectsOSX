@@ -766,6 +766,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitModeSwitched:" target="UzZ-Aj-ZUF" id="YsD-rI-KC6"/>
+                                            </connections>
                                         </button>
                                         <button translatesAutoresizingMaskIntoConstraints="NO" id="MDE-pe-Qri">
                                             <rect key="frame" x="19" y="21" width="138" height="18"/>
@@ -776,6 +779,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitModeSwitched:" target="UzZ-Aj-ZUF" id="L5c-Jn-sxA"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
@@ -794,7 +800,7 @@
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
-                            <box ambiguous="YES" misplaced="YES" title="Slit Move Direction" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="vb9-Of-Ve0">
+                            <box title="Slit Move Direction" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="vb9-Of-Ve0">
                                 <rect key="frame" x="196" y="70" width="177" height="135"/>
                                 <view key="contentView" id="mSN-2b-B6A">
                                     <rect key="frame" x="1" y="1" width="175" height="119"/>
@@ -809,6 +815,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitMoveDirectionSwitched:" target="UzZ-Aj-ZUF" id="SjD-Hn-AEQ"/>
+                                            </connections>
                                         </button>
                                         <button translatesAutoresizingMaskIntoConstraints="NO" id="zzb-HG-wYE">
                                             <rect key="frame" x="19" y="60" width="138" height="18"/>
@@ -819,6 +828,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitMoveDirectionSwitched:" target="UzZ-Aj-ZUF" id="Lak-Wc-DHM"/>
+                                            </connections>
                                         </button>
                                         <button translatesAutoresizingMaskIntoConstraints="NO" id="ZT2-uU-4b6">
                                             <rect key="frame" x="19" y="38" width="138" height="18"/>
@@ -829,6 +841,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitMoveDirectionSwitched:" target="UzZ-Aj-ZUF" id="KEF-p0-ruY"/>
+                                            </connections>
                                         </button>
                                         <button translatesAutoresizingMaskIntoConstraints="NO" id="CoA-Zr-DKj">
                                             <rect key="frame" x="19" y="16" width="138" height="18"/>
@@ -839,6 +854,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitMoveDirectionSwitched:" target="UzZ-Aj-ZUF" id="Zdf-X6-TsP"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
@@ -863,14 +881,14 @@
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
-                            <box ambiguous="YES" misplaced="YES" title="Slit Type" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="27K-g1-EgD">
-                                <rect key="frame" x="375" y="109" width="177" height="96"/>
+                            <box title="Slit Type" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="27K-g1-EgD">
+                                <rect key="frame" x="375" y="60" width="177" height="145"/>
                                 <view key="contentView" id="nnZ-DK-l2k">
-                                    <rect key="frame" x="1" y="1" width="175" height="80"/>
+                                    <rect key="frame" x="1" y="1" width="175" height="129"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <button translatesAutoresizingMaskIntoConstraints="NO" id="rHs-DY-iBX">
-                                            <rect key="frame" x="19" y="43" width="138" height="18"/>
+                                            <rect key="frame" x="19" y="92" width="138" height="18"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="16" id="6po-OI-0SU"/>
                                             </constraints>
@@ -878,9 +896,12 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitTypeSwitched:" target="UzZ-Aj-ZUF" id="BE9-YJ-Ksu"/>
+                                            </connections>
                                         </button>
                                         <button translatesAutoresizingMaskIntoConstraints="NO" id="RvK-LJ-9Qd">
-                                            <rect key="frame" x="19" y="21" width="138" height="18"/>
+                                            <rect key="frame" x="19" y="70" width="138" height="18"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="16" id="PXv-a1-xSJ"/>
                                             </constraints>
@@ -888,20 +909,47 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="slitTypeSwitched:" target="UzZ-Aj-ZUF" id="L2d-82-jb1"/>
+                                            </connections>
                                         </button>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="H2y-2w-F57">
+                                            <rect key="frame" x="18" y="46" width="139" height="17"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="17" id="s6W-EV-eLd"/>
+                                            </constraints>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Position" id="Dzg-Av-f5q">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jL5-xv-vzA">
+                                            <rect key="frame" x="18" y="20" width="139" height="20"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="zG5-NP-7Hx"/>
+                                            </constraints>
+                                            <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="99" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="t06-eB-teE"/>
+                                        </slider>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="rHs-DY-iBX" firstAttribute="leading" secondItem="nnZ-DK-l2k" secondAttribute="leading" constant="20" id="2Ar-f8-c3R"/>
+                                        <constraint firstItem="H2y-2w-F57" firstAttribute="top" secondItem="RvK-LJ-9Qd" secondAttribute="bottom" constant="8" id="2DF-Zf-4sV"/>
                                         <constraint firstItem="rHs-DY-iBX" firstAttribute="top" secondItem="nnZ-DK-l2k" secondAttribute="top" constant="20" id="8CP-Mx-PbU"/>
                                         <constraint firstAttribute="trailing" secondItem="RvK-LJ-9Qd" secondAttribute="trailing" constant="20" id="8sG-of-4pA"/>
+                                        <constraint firstItem="H2y-2w-F57" firstAttribute="leading" secondItem="nnZ-DK-l2k" secondAttribute="leading" constant="20" id="IDi-vS-HQD"/>
                                         <constraint firstItem="RvK-LJ-9Qd" firstAttribute="top" secondItem="rHs-DY-iBX" secondAttribute="bottom" constant="6" id="REl-oU-Sij"/>
                                         <constraint firstItem="RvK-LJ-9Qd" firstAttribute="leading" secondItem="nnZ-DK-l2k" secondAttribute="leading" constant="20" id="ZH2-dh-zw0"/>
+                                        <constraint firstItem="jL5-xv-vzA" firstAttribute="leading" secondItem="nnZ-DK-l2k" secondAttribute="leading" constant="20" id="dPT-xR-zEa"/>
+                                        <constraint firstItem="jL5-xv-vzA" firstAttribute="top" secondItem="H2y-2w-F57" secondAttribute="bottom" constant="8" id="eyC-yQ-uiF"/>
+                                        <constraint firstAttribute="trailing" secondItem="H2y-2w-F57" secondAttribute="trailing" constant="20" id="ko4-uY-m4v"/>
                                         <constraint firstAttribute="trailing" secondItem="rHs-DY-iBX" secondAttribute="trailing" constant="20" id="lbl-IH-b03"/>
+                                        <constraint firstAttribute="trailing" secondItem="jL5-xv-vzA" secondAttribute="trailing" constant="20" id="o05-qD-FN1"/>
                                     </constraints>
                                 </view>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="171" id="BWi-I6-NCu"/>
-                                    <constraint firstAttribute="height" constant="92" id="yth-IH-FNW"/>
+                                    <constraint firstAttribute="height" constant="141" id="yth-IH-FNW"/>
                                 </constraints>
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -909,12 +957,22 @@
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DDg-ql-8FZ">
                                 <rect key="frame" x="262" y="213" width="349" height="148"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="800" id="bKE-sw-oqB"/>
+                                    <constraint firstAttribute="width" constant="349" id="5Td-Kn-twQ"/>
                                 </constraints>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="5li-te-fwi"/>
                             </imageView>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uSR-79-74c">
+                                <rect key="frame" x="14" y="13" width="70" height="32"/>
+                                <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XJ0-VA-iRg">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                            </button>
                             <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="dWd-s1-fcr">
-                                <rect key="frame" x="428" y="279" width="16" height="16"/>
+                                <rect key="frame" x="86" y="22" width="16" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="Mqo-oo-KW6"/>
                                     <constraint firstAttribute="width" constant="16" id="wlw-S7-Zyy"/>
@@ -922,17 +980,21 @@
                             </progressIndicator>
                         </subviews>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="uSR-79-74c" secondAttribute="bottom" constant="20" id="2gE-P1-YL4"/>
                             <constraint firstItem="DDg-ql-8FZ" firstAttribute="bottom" secondItem="PZH-Zu-gr5" secondAttribute="bottom" id="5ZT-YS-HH9"/>
                             <constraint firstItem="27K-g1-EgD" firstAttribute="leading" secondItem="vb9-Of-Ve0" secondAttribute="trailing" constant="8" id="8SJ-0u-XOg"/>
-                            <constraint firstItem="dWd-s1-fcr" firstAttribute="centerY" secondItem="DDg-ql-8FZ" secondAttribute="centerY" id="D6E-Na-sgz"/>
                             <constraint firstItem="PZH-Zu-gr5" firstAttribute="leading" secondItem="IyF-0m-Uwj" secondAttribute="leading" constant="20" id="Fb5-FE-Bov"/>
                             <constraint firstItem="6yR-Ur-AyG" firstAttribute="top" secondItem="PZH-Zu-gr5" secondAttribute="bottom" constant="8" id="PWA-H7-oo4"/>
                             <constraint firstItem="DDg-ql-8FZ" firstAttribute="top" secondItem="IyF-0m-Uwj" secondAttribute="top" constant="20" id="V6J-fY-RRp"/>
-                            <constraint firstItem="dWd-s1-fcr" firstAttribute="centerX" secondItem="DDg-ql-8FZ" secondAttribute="centerX" id="Yil-qF-ind"/>
+                            <constraint firstItem="27K-g1-EgD" firstAttribute="top" secondItem="6yR-Ur-AyG" secondAttribute="top" id="aOl-if-4RX"/>
                             <constraint firstAttribute="trailing" secondItem="DDg-ql-8FZ" secondAttribute="trailing" constant="20" id="fOk-5D-09n"/>
+                            <constraint firstItem="uSR-79-74c" firstAttribute="leading" secondItem="IyF-0m-Uwj" secondAttribute="leading" constant="20" id="pv5-DA-DaA"/>
                             <constraint firstItem="PZH-Zu-gr5" firstAttribute="top" secondItem="IyF-0m-Uwj" secondAttribute="top" constant="20" id="rLJ-I6-hXZ"/>
                             <constraint firstItem="6yR-Ur-AyG" firstAttribute="leading" secondItem="IyF-0m-Uwj" secondAttribute="leading" constant="20" id="sLr-MY-UzD"/>
                             <constraint firstItem="DDg-ql-8FZ" firstAttribute="leading" secondItem="PZH-Zu-gr5" secondAttribute="trailing" constant="8" id="uA0-l7-jJ5"/>
+                            <constraint firstItem="vb9-Of-Ve0" firstAttribute="top" secondItem="6yR-Ur-AyG" secondAttribute="top" id="vVM-2y-d5R"/>
+                            <constraint firstItem="dWd-s1-fcr" firstAttribute="leading" secondItem="uSR-79-74c" secondAttribute="trailing" constant="8" id="wZ1-x2-Wrc"/>
+                            <constraint firstItem="dWd-s1-fcr" firstAttribute="centerY" secondItem="uSR-79-74c" secondAttribute="centerY" id="yMe-6F-tsg"/>
                             <constraint firstItem="vb9-Of-Ve0" firstAttribute="leading" secondItem="6yR-Ur-AyG" secondAttribute="trailing" constant="8" id="yjl-rC-XJT"/>
                         </constraints>
                     </view>
@@ -940,9 +1002,19 @@
                         <outlet property="progressIndicator" destination="dWd-s1-fcr" id="VBK-Gl-VOm"/>
                         <outlet property="resultingImageView" destination="DDg-ql-8FZ" id="Qrf-Id-NPO"/>
                         <outlet property="slitModeBox" destination="6yR-Ur-AyG" id="2XA-Ih-rx1"/>
+                        <outlet property="slitModeMovingRadioButton" destination="MDE-pe-Qri" id="i83-Vp-jdI"/>
+                        <outlet property="slitModeStillRadioButton" destination="Dtq-xs-xbb" id="bn0-Hc-Htm"/>
                         <outlet property="slitMoveDirectionBox" destination="vb9-Of-Ve0" id="uy8-lB-6Fw"/>
+                        <outlet property="slitMoveDirectionBtoTRadioButton" destination="CoA-Zr-DKj" id="ihf-WZ-1w6"/>
+                        <outlet property="slitMoveDirectionTtoBRadioButton" destination="ZT2-uU-4b6" id="4nv-HT-PBD"/>
+                        <outlet property="slitMoveDirectonLtoRRadioButton" destination="7ba-D7-bUH" id="z7Z-80-6Xw"/>
+                        <outlet property="slitMoveDirectonRtoLRadioButton" destination="zzb-HG-wYE" id="kaM-Wa-DW6"/>
+                        <outlet property="slitPositionSlider" destination="jL5-xv-vzA" id="Mof-Yu-HFY"/>
                         <outlet property="slitTypeBox" destination="27K-g1-EgD" id="xJV-gF-Iqx"/>
+                        <outlet property="slitTypeHorizontalRadioButton" destination="RvK-LJ-9Qd" id="Ux8-dm-v7Y"/>
+                        <outlet property="slitTypeVerticalRadioButton" destination="rHs-DY-iBX" id="WiC-f4-W5W"/>
                         <outlet property="sourceVideoView" destination="PZH-Zu-gr5" id="11X-FD-b1H"/>
+                        <outlet property="startButton" destination="uSR-79-74c" id="aWi-9x-QqA"/>
                     </connections>
                 </viewController>
                 <customObject id="phc-O5-3wZ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

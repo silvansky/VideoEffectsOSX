@@ -13,6 +13,10 @@
 @property (nonatomic, strong, readonly) RACSignal *draggedFilesSignal;
 @property (nonatomic, assign) BOOL locked;
 
+@property (nonatomic, assign) BOOL verticalSlit;
+@property (nonatomic, assign) BOOL showSlit;
+@property (nonatomic, assign) NSInteger slitPosition;
+
 - (void)updatePreview:(NSImage *)preview;
 
 @end

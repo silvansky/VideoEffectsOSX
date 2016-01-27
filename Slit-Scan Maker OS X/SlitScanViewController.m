@@ -13,6 +13,13 @@
 @import AVKit;
 @import CoreGraphics;
 
+typedef enum : NSUInteger {
+	LeftToRight,
+	RightToLeft,
+	TopToBottom,
+	BottomToTop
+} MovingSlitDirection;
+
 @interface SlitScanViewController ()
 
 @property (weak) IBOutlet SourceVideoView *sourceVideoView;
@@ -22,28 +29,109 @@
 @property (weak) IBOutlet NSBox *slitMoveDirectionBox;
 @property (weak) IBOutlet NSBox *slitTypeBox;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
+@property (weak) IBOutlet NSButton *startButton;
 
+// mode box
+@property (weak) IBOutlet NSButton *slitModeStillRadioButton;
+@property (weak) IBOutlet NSButton *slitModeMovingRadioButton;
+
+// direction box
+@property (weak) IBOutlet NSButton *slitMoveDirectonLtoRRadioButton;
+@property (weak) IBOutlet NSButton *slitMoveDirectonRtoLRadioButton;
+@property (weak) IBOutlet NSButton *slitMoveDirectionTtoBRadioButton;
+@property (weak) IBOutlet NSButton *slitMoveDirectionBtoTRadioButton;
+
+// type box
+@property (weak) IBOutlet NSButton *slitTypeVerticalRadioButton;
+@property (weak) IBOutlet NSButton *slitTypeHorizontalRadioButton;
+@property (weak) IBOutlet NSSlider *slitPositionSlider;
+
+// arrays of elements
+
+@property (nonatomic, strong) NSArray<NSControl *> *modeBoxElements;
+@property (nonatomic, strong) NSArray<NSControl *> *directionBoxElements;
+@property (nonatomic, strong) NSArray<NSControl *> *typeBoxElements;
+
+// helpers
 @property (nonatomic, strong) AVURLAsset *currentAsset;
 @property (nonatomic, assign) NSSize currentImageSize;
 @property (nonatomic, assign) BOOL movingLine;
+@property (nonatomic, assign) BOOL verticalSlit;
 @property (nonatomic, assign) NSInteger currentLine;
 @property (atomic, strong) NSImage *internalPartialImg;
+@property (nonatomic, assign) BOOL processing;
+@property (nonatomic, assign) MovingSlitDirection slitDirection;
 
 - (void)processAsset:(AVURLAsset *)asset;
 - (void)saveCurrentImage;
+- (void)enableBox:(NSArray<NSControl *> *)box;
+- (void)disableBox:(NSArray<NSControl *> *)box;
+- (void)updateBoxes;
 
 @end
 
 @implementation SlitScanViewController
 
+- (IBAction)slitModeSwitched:(id)sender
+{
+	self.movingLine = (sender == self.slitModeMovingRadioButton);
+	self.sourceVideoView.showSlit = !self.movingLine;
+	[self updateBoxes];
+}
+
+- (IBAction)slitMoveDirectionSwitched:(id)sender
+{
+	MovingSlitDirection direction;
+	if (sender == self.slitMoveDirectonLtoRRadioButton)
+	{
+		direction = LeftToRight;
+	}
+	else if (sender == self.slitMoveDirectonRtoLRadioButton)
+	{
+		direction = RightToLeft;
+	}
+	else if (sender == self.slitMoveDirectionTtoBRadioButton)
+	{
+		direction = TopToBottom;
+	}
+	else if (sender == self.slitMoveDirectionBtoTRadioButton)
+	{
+		direction = BottomToTop;
+	}
+
+	self.slitDirection = direction;
+}
+
+- (IBAction)slitTypeSwitched:(id)sender
+{
+	BOOL vertical = (sender == self.slitTypeVerticalRadioButton);
+	self.sourceVideoView.verticalSlit = vertical;
+	self.verticalSlit = vertical;
+}
+
 - (void)viewDidLoad
 {
+	// set up elements arrays
+	self.modeBoxElements = @[ self.slitModeMovingRadioButton, self.slitModeStillRadioButton ];
+	self.directionBoxElements = @[ self.slitMoveDirectionBtoTRadioButton, self.slitMoveDirectionTtoBRadioButton, self.slitMoveDirectonLtoRRadioButton, self.slitMoveDirectonRtoLRadioButton ];
+	self.typeBoxElements = @[ self.slitTypeHorizontalRadioButton, self.slitTypeVerticalRadioButton, self.slitPositionSlider ];
+
+	// initial state
+	self.verticalSlit = YES;
+	self.movingLine = NO;
+	self.slitDirection = LeftToRight;
+	[self updateBoxes];
+
+	self.sourceVideoView.showSlit = YES;
+	self.sourceVideoView.verticalSlit = YES;
+	self.sourceVideoView.slitPosition = 50;
 	[self setupSignals];
 }
 
 - (void)setupSignals
 {
 	@weakify(self);
+
 	[self.sourceVideoView.draggedFilesSignal subscribeNext:^(NSString *file) {
 		@strongify(self);
 		NSLog(@"Got video file: %@", file);
@@ -56,9 +144,22 @@
 		size.height = CGImageGetHeight(cgImage);
 		self.currentImageSize = size;
 		[self.sourceVideoView updatePreview:[[NSImage alloc] initWithCGImage:cgImage size:size]];
-		[self processAsset:asset];
+		self.currentAsset = asset;
 		CGImageRelease(cgImage);
 	}];
+
+	self.startButton.rac_command = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id __unused input) {
+		@strongify(self);
+		if (self.currentAsset != nil)
+		{
+			self.processing = YES;
+			[self updateBoxes];
+			[self processAsset:self.currentAsset];
+		}
+		return [RACSignal empty];
+	}];
+
+	[self.slitPositionSlider bind:@"value" toObject:self.sourceVideoView withKeyPath:@"slitPosition" options:nil];
 }
 
 #pragma mark - Private
@@ -128,10 +229,61 @@
 	rect.origin = CGPointMake(0.f, 0.f);
 	rect.size = size;
 
-	CGRect lineRect = self.movingLine ? CGRectMake((CGFloat)self.currentLine, 0.f, 1.f, (CGFloat)height) : CGRectMake((CGFloat)(width / 2.f), 0.f, 1.f, (CGFloat)height);
-	CGRect lineDrawRect = CGRectMake((CGFloat)self.currentLine, 0.f, 1.f, (CGFloat)height);
-	CGRect cursorLineRect = lineDrawRect;
-	cursorLineRect.origin.x += 1.f;
+	CGRect lineRect;
+	if (self.movingLine)
+	{
+		switch (self.slitDirection)
+		{
+			case LeftToRight:
+				lineRect = CGRectMake((CGFloat)self.currentLine, 0.f, 1.f, (CGFloat)height);
+				break;
+			case RightToLeft:
+				lineRect = CGRectMake((CGFloat)(width - self.currentLine), 0.f, 1.f, (CGFloat)height);
+				break;
+			case TopToBottom:
+				lineRect = CGRectMake(0.f, (CGFloat)self.currentLine, (CGFloat)width, 1.f);
+				break;
+			case BottomToTop:
+				lineRect = CGRectMake(0.f, (CGFloat)(height - self.currentLine), (CGFloat)width, 1.f);
+				break;
+		}
+	}
+	else if (self.verticalSlit)
+	{
+		lineRect = CGRectMake((CGFloat)(width * self.sourceVideoView.slitPosition / 100.f), 0.f, 1.f, (CGFloat)height);
+	}
+	else
+	{
+		lineRect = CGRectMake(0.f, (CGFloat)(height - height * self.sourceVideoView.slitPosition / 100.f), (CGFloat)width, 1.f);
+	}
+
+	CGRect lineDrawRect;
+	if (self.movingLine)
+	{
+		switch (self.slitDirection)
+		{
+			case LeftToRight:
+				lineDrawRect = CGRectMake((CGFloat)self.currentLine, 0.f, 1.f, (CGFloat)height);
+				break;
+			case RightToLeft:
+				lineDrawRect = CGRectMake((CGFloat)(width - self.currentLine), 0.f, 1.f, (CGFloat)height);
+				break;
+			case BottomToTop:
+				lineDrawRect = CGRectMake(0.f, (CGFloat)self.currentLine, (CGFloat)width, 1.f);
+				break;
+			case TopToBottom:
+				lineDrawRect = CGRectMake(0.f, (CGFloat)(height - self.currentLine), (CGFloat)width, 1.f);
+				break;
+		}
+	}
+	else if (self.verticalSlit)
+	{
+		lineDrawRect = CGRectMake((CGFloat)self.currentLine, 0.f, 1.f, (CGFloat)height);
+	}
+	else
+	{
+		lineDrawRect = CGRectMake(0.f, (CGFloat)(height - self.currentLine), (CGFloat)width, 1.f);
+	}
 
 	CGImageRef line = CGImageCreateWithImageInRect(sourceQuartzImage, lineRect);
 
@@ -140,7 +292,7 @@
 
 	if (!ctx)
 	{
-		NSLog(@"WTF!");
+		NSLog(@"Hey, no context in partialImageWithSource! Debug me plz. =/");
 	}
 
 	if (self.internalPartialImg)
@@ -149,9 +301,6 @@
 	}
 
 	CGContextDrawImage(ctx, lineDrawRect, line);
-
-//	CGContextSetFillColorWithColor(ctx, [NSColor colorWithRed:(117.f/255.f) green:(205.f/255.f) blue:0.f alpha:1.f].CGColor);
-//	CGContextFillRect(ctx, cursorLineRect);
 
 	NSImage *image = nil;
 
@@ -220,7 +369,9 @@
 							}
 							i++;
 							self.currentLine++;
-							if (self.currentLine > self.currentImageSize.width)
+							BOOL verticalSlit = ((!self.movingLine && self.verticalSlit) || (self.movingLine && (self.slitDirection == LeftToRight || self.slitDirection == RightToLeft)));
+							CGFloat maxLines = (verticalSlit ? self.currentImageSize.width : self.currentImageSize.height);
+							if (self.currentLine > maxLines)
 							{
 								self.currentLine = 0;
 								[self saveCurrentImage];
@@ -243,6 +394,8 @@
 						@autoreleasepool {
 							self.sourceVideoView.locked = NO;
 							[self.progressIndicator stopAnimation:nil];
+							self.processing = NO;
+							[self updateBoxes];
 						}
 					});
 				}
@@ -264,6 +417,44 @@
 	NSString *fileName = [NSString stringWithFormat:@"/Users/valentine/Pictures/SSM/slit-scan-%@.png", @([[NSDate date] timeIntervalSince1970])];
 	BOOL ok = [data writeToFile:fileName atomically:NO];
 	NSLog(@"Saved image to %@ (%@)", fileName, @(ok));
+}
+
+- (void)enableBox:(NSArray<NSControl *> *)box
+{
+	[box each:^(NSControl *object) {
+		object.enabled = YES;
+	}];
+}
+
+- (void)disableBox:(NSArray<NSControl *> *)box
+{
+	[box each:^(NSControl *object) {
+		object.enabled = NO;
+	}];
+}
+
+- (void)updateBoxes
+{
+	if (self.processing)
+	{
+		[self disableBox:self.modeBoxElements];
+		[self disableBox:self.typeBoxElements];
+		[self disableBox:self.directionBoxElements];
+	}
+	else
+	{
+		[self enableBox:self.modeBoxElements];
+		if (self.movingLine)
+		{
+			[self disableBox:self.typeBoxElements];
+			[self enableBox:self.directionBoxElements];
+		}
+		else
+		{
+			[self disableBox:self.directionBoxElements];
+			[self enableBox:self.typeBoxElements];
+		}
+	}
 }
 
 @end

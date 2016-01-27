@@ -34,6 +34,18 @@
 - (void)awakeFromNib
 {
 	[self registerForDraggedTypes:@[ NSFilenamesPboardType ]];
+
+	[RACObserve(self, slitPosition) subscribeNext:^(id x) {
+		[self setNeedsDisplay:YES];
+	}];
+
+	[RACObserve(self, verticalSlit) subscribeNext:^(id x) {
+		[self setNeedsDisplay:YES];
+	}];
+
+	[RACObserve(self, showSlit) subscribeNext:^(id x) {
+		[self setNeedsDisplay:YES];
+	}];
 }
 
 - (RACSignal *)draggedFilesSignal
@@ -154,6 +166,24 @@
 	{
 		[[NSColor colorWithRed:0.3 green:0.4 blue:1 alpha:0.2] setFill];
 		NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
+	}
+
+	if (self.showSlit)
+	{
+		NSRect lineRect;
+		if (self.verticalSlit)
+		{
+			CGFloat x = self.bounds.size.width * self.slitPosition * 0.01;
+			lineRect = NSMakeRect(x, 0.f, 1.f, self.bounds.size.height);
+		}
+		else
+		{
+			CGFloat y = self.bounds.size.height * self.slitPosition * 0.01;
+			lineRect = NSMakeRect(0.f, y, self.bounds.size.width, 1.f);
+		}
+
+		[[NSColor colorWithRed:1 green:0 blue:0 alpha:1] setFill];
+		NSRectFill(lineRect);
 	}
 }
 
