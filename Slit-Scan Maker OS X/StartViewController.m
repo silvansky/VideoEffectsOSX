@@ -27,6 +27,14 @@
 		[self performSegueWithIdentifier:@"slit-scan-segue" sender:self];
 		return [RACSignal empty];
 	}];
+
+	self.rollingShutterButton.rac_command = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id __unused input) {
+		@strongify(self);
+		[self.view.window close];
+		[self performSegueWithIdentifier:@"rolling-shutter-segue" sender:self];
+		return [RACSignal empty];
+	}];
+
 }
 
 @end

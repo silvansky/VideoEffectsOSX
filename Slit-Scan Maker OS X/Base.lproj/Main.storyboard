@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="jKU-xg-bnr">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
@@ -719,6 +719,88 @@
             <point key="canvasLocation" x="75" y="0.0"/>
         </scene>
         <!--Window Controller-->
+        <scene sceneID="azJ-Jo-ofq">
+            <objects>
+                <windowController id="phI-ir-oZX" sceneMemberID="viewController">
+                    <window key="window" title="Rolling Shutter" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="nZc-Sl-KMB">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <rect key="contentRect" x="294" y="313" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
+                    </window>
+                    <connections>
+                        <segue destination="HdP-15-TIU" kind="relationship" relationship="window.shadowedContentViewController" id="vwC-bq-onD"/>
+                    </connections>
+                </windowController>
+                <customObject id="Y8I-u0-vja" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="929" y="653"/>
+        </scene>
+        <!--Rolling Shutter View Controller-->
+        <scene sceneID="ZPU-8U-Seq">
+            <objects>
+                <viewController id="HdP-15-TIU" customClass="RollingShutterViewController" sceneMemberID="viewController">
+                    <view key="view" id="gpN-Zw-z4s">
+                        <rect key="frame" x="0.0" y="0.0" width="631" height="510"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="M43-tk-WxK" customClass="SourceVideoView">
+                                <rect key="frame" x="20" y="342" width="234" height="148"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="148" id="nDA-uq-Xw4"/>
+                                    <constraint firstAttribute="width" constant="234" id="oJa-PD-Y7d"/>
+                                </constraints>
+                            </customView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="zyJ-5l-gNb">
+                                <rect key="frame" x="262" y="342" width="349" height="148"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="349" id="z0T-HD-gIF"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="O02-Pa-JCR"/>
+                            </imageView>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="TEj-n1-vkW">
+                                <rect key="frame" x="86" y="22" width="16" height="16"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="16" id="JKq-Vf-XeQ"/>
+                                    <constraint firstAttribute="width" constant="16" id="bzH-Ou-Arr"/>
+                                </constraints>
+                            </progressIndicator>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="G1q-LV-eUG">
+                                <rect key="frame" x="14" y="13" width="70" height="32"/>
+                                <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="KQu-TB-Lrs">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="TEj-n1-vkW" firstAttribute="centerY" secondItem="G1q-LV-eUG" secondAttribute="centerY" id="1gA-lf-YBO"/>
+                            <constraint firstItem="zyJ-5l-gNb" firstAttribute="leading" secondItem="M43-tk-WxK" secondAttribute="trailing" constant="8" id="8RU-0j-GDP"/>
+                            <constraint firstAttribute="bottom" secondItem="G1q-LV-eUG" secondAttribute="bottom" constant="20" id="C10-0r-vaa"/>
+                            <constraint firstItem="zyJ-5l-gNb" firstAttribute="top" secondItem="gpN-Zw-z4s" secondAttribute="top" constant="20" id="Gt1-Aa-T5K"/>
+                            <constraint firstAttribute="trailing" secondItem="zyJ-5l-gNb" secondAttribute="trailing" constant="20" id="NwS-3Z-gGa"/>
+                            <constraint firstItem="M43-tk-WxK" firstAttribute="top" secondItem="gpN-Zw-z4s" secondAttribute="top" constant="20" id="bqW-XR-rEo"/>
+                            <constraint firstItem="G1q-LV-eUG" firstAttribute="leading" secondItem="gpN-Zw-z4s" secondAttribute="leading" constant="20" id="diz-dd-vDz"/>
+                            <constraint firstItem="M43-tk-WxK" firstAttribute="leading" secondItem="gpN-Zw-z4s" secondAttribute="leading" constant="20" id="eDk-qt-HUc"/>
+                            <constraint firstItem="TEj-n1-vkW" firstAttribute="leading" secondItem="G1q-LV-eUG" secondAttribute="trailing" constant="8" id="haP-gG-5zz"/>
+                            <constraint firstItem="zyJ-5l-gNb" firstAttribute="bottom" secondItem="M43-tk-WxK" secondAttribute="bottom" id="m9N-P7-5zE"/>
+                            <constraint firstItem="zyJ-5l-gNb" firstAttribute="leading" secondItem="M43-tk-WxK" secondAttribute="trailing" constant="8" id="v0w-e8-8mI"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="progressIndicator" destination="TEj-n1-vkW" id="fDD-Qz-aHH"/>
+                        <outlet property="resultingImageView" destination="zyJ-5l-gNb" id="lCc-Ss-BZB"/>
+                        <outlet property="sourceVideoView" destination="M43-tk-WxK" id="hiA-IY-HTZ"/>
+                        <outlet property="startButton" destination="G1q-LV-eUG" id="MX7-QL-8wv"/>
+                    </connections>
+                </viewController>
+                <customObject id="79K-bw-IQn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1695.5" y="775"/>
+        </scene>
+        <!--Window Controller-->
         <scene sceneID="gPf-6k-Rp0">
             <objects>
                 <windowController id="jKU-xg-bnr" sceneMemberID="viewController">
@@ -1069,6 +1151,9 @@ DQ
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <segue destination="phI-ir-oZX" kind="show" identifier="rolling-shutter-segue" id="VOJ-Cu-S2P"/>
+                                </connections>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="frZ-Mf-g7V">
                                 <rect key="frame" x="290" y="65" width="140" height="140"/>

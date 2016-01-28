@@ -18,6 +18,7 @@
 		A370BED71C565B5F00B8E84B /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BED61C565B5F00B8E84B /* LogViewController.m */; };
 		A370BEDA1C565B6B00B8E84B /* StartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BED91C565B6B00B8E84B /* StartViewController.m */; };
 		A370BEE21C565E4B00B8E84B /* SourceVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = A370BEE11C565E4B00B8E84B /* SourceVideoView.m */; };
+		A3F21FB01C5A33740039B841 /* NSImage+SampleBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = A3F21FAF1C5A33740039B841 /* NSImage+SampleBuffer.m */; };
 		EC2D6C49ACD3235CD674CB94 /* libPods-Slit-Scan Maker OS X.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15D3C30664C1166C25FED6F5 /* libPods-Slit-Scan Maker OS X.a */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +47,8 @@
 		A370BEE01C565E4B00B8E84B /* SourceVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceVideoView.h; sourceTree = "<group>"; };
 		A370BEE11C565E4B00B8E84B /* SourceVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceVideoView.m; sourceTree = "<group>"; };
 		A370BEE31C56746300B8E84B /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
+		A3F21FAE1C5A33740039B841 /* NSImage+SampleBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSImage+SampleBuffer.h"; sourceTree = "<group>"; };
+		A3F21FAF1C5A33740039B841 /* NSImage+SampleBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSImage+SampleBuffer.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +105,8 @@
 				A359C8961C316B0D0072EB21 /* Main.storyboard */,
 				A359C8991C316B0D0072EB21 /* Info.plist */,
 				A359C88E1C316B0D0072EB21 /* Supporting Files */,
+				A3F21FAE1C5A33740039B841 /* NSImage+SampleBuffer.h */,
+				A3F21FAF1C5A33740039B841 /* NSImage+SampleBuffer.m */,
 			);
 			path = "Slit-Scan Maker OS X";
 			sourceTree = "<group>";
@@ -291,6 +296,7 @@
 				A359C88D1C316B0D0072EB21 /* AppDelegate.m in Sources */,
 				A370BED11C565B4600B8E84B /* SlitScanViewController.m in Sources */,
 				A370BED71C565B5F00B8E84B /* LogViewController.m in Sources */,
+				A3F21FB01C5A33740039B841 /* NSImage+SampleBuffer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
