@@ -10,6 +10,8 @@
 
 #import "SourceVideoView.h"
 
+#import "NSImage+SampleBuffer.h"
+
 @import AVFoundation;
 
 @interface RollingShutterViewController ()
@@ -92,7 +94,109 @@
 
 - (void)processAsset:(AVURLAsset *)asset
 {
+	self.currentAsset = asset;
+	@weakify(self);
+	dispatch_async(dispatch_queue_create("processAsset", DISPATCH_QUEUE_SERIAL), ^{
+		@autoreleasepool
+		{
+			@strongify(self);
+			NSError *error = nil;
+			AVAssetReader *assetReader = [[AVAssetReader alloc] initWithAsset:self.currentAsset error:&error];
+			AVAssetTrack *videoTrack = [self.currentAsset tracksWithMediaType:AVMediaTypeVideo][0];
+			NSDictionary *dict = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
 
+			AVAssetReaderTrackOutput *assetReaderOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:videoTrack outputSettings:dict];
+
+			NSInteger i = 0;
+//			self.currentLine = 0;
+			NSDate *startDate = [NSDate date];
+			if ([assetReader canAddOutput:assetReaderOutput])
+			{
+				[assetReader addOutput:assetReaderOutput];
+				if ([assetReader startReading])
+				{
+					dispatch_sync(dispatch_get_main_queue(), ^{
+						self.sourceVideoView.locked = YES;
+						[self.progressIndicator startAnimation:nil];
+					});
+
+					/* read off the samples */
+					CMSampleBufferRef buffer;
+					while ([assetReader status] == AVAssetReaderStatusReading)
+					{
+						@autoreleasepool
+						{
+							buffer = [assetReaderOutput copyNextSampleBuffer];
+
+							NSImage *currentImage = [NSImage imageWithSampleBuffer:buffer];
+							NSImage *partialImage = nil;//[self partialImageWithSource:currentImage];
+
+							if (partialImage != nil)
+							{
+								self.internalPartialImg = partialImage;
+							}
+
+							if (partialImage && (i % 100 == 0))
+							{
+								dispatch_async(dispatch_get_main_queue(), ^{
+									@autoreleasepool {
+										[self.sourceVideoView updatePreview:currentImage];
+										self.resultingImageView.image = partialImage;
+									}
+								});
+							}
+
+							i++;
+							//self.currentLine++;
+
+//							BOOL verticalSlit = ((!self.movingLine && self.verticalSlit) || (self.movingLine && (self.slitDirection == LeftToRight || self.slitDirection == RightToLeft)));
+//							CGFloat maxLines = (verticalSlit ? self.currentImageSize.width : self.currentImageSize.height);
+
+//							if (self.currentLine > maxLines)
+//							{
+//								self.currentLine = 0;
+//								[self saveCurrentImage];
+//								self.internalPartialImg = nil;
+//							}
+
+							if (buffer != NULL)
+							{
+								CFRelease(buffer);
+							}
+							if (self.stopAfterNextFrame)
+							{
+								self.stopAfterNextFrame = NO;
+								break;
+							}
+						} // pool
+					}
+
+					NSDate *endDate = [NSDate date];
+					NSTimeInterval duration = [endDate timeIntervalSinceDate:startDate];
+//					[self saveCurrentImage];
+					self.internalPartialImg = nil;
+					NSLog(@"Processed %@ frames in %@ seconds, FPS: %@", @(i), @(duration), @(i/duration));
+
+					dispatch_async(dispatch_get_main_queue(), ^{
+						@autoreleasepool {
+							self.sourceVideoView.locked = NO;
+							[self.progressIndicator stopAnimation:nil];
+							self.processing = NO;
+							self.startButton.title = @"Start";
+							[self.sourceVideoView updatePreview:self.originalPreviewImage];
+//							[self updateBoxes];
+						}
+					});
+				}
+				else
+				{
+					NSLog(@"could not start reading asset.");
+					NSLog(@"reader status: %ld", [assetReader status]);
+				}
+			}
+		}
+	});
 }
+
 
 @end
