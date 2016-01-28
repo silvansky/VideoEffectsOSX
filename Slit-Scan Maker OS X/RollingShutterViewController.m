@@ -22,6 +22,7 @@
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 
 @property (nonatomic, strong) AVURLAsset *currentAsset;
+@property (nonatomic, strong) AVAssetWriter *outputAssetWriter;
 @property (nonatomic, assign) NSSize currentImageSize;
 
 @property (atomic, strong) NSImage *internalPartialImg;
@@ -92,6 +93,67 @@
 
 #pragma mark - Private
 
++ (CVPixelBufferRef)pixelBufferFromCGImage:(CGImageRef)image
+{
+	CGSize frameSize = CGSizeMake(CGImageGetWidth(image),
+								  CGImageGetHeight(image));
+	NSDictionary *options =
+	[NSDictionary dictionaryWithObjectsAndKeys:
+	 [NSNumber numberWithBool:YES],
+	 kCVPixelBufferCGImageCompatibilityKey,
+	 [NSNumber numberWithBool:YES],
+	 kCVPixelBufferCGBitmapContextCompatibilityKey,
+	 nil];
+	CVPixelBufferRef pxbuffer = NULL;
+
+	CVReturn status =
+	CVPixelBufferCreate(
+						kCFAllocatorDefault, frameSize.width, frameSize.height,
+						kCVPixelFormatType_32ARGB, (__bridge CFDictionaryRef)options,
+						&pxbuffer);
+	NSParameterAssert(status == kCVReturnSuccess && pxbuffer != NULL);
+
+	CVPixelBufferLockBaseAddress(pxbuffer, 0);
+	void *pxdata = CVPixelBufferGetBaseAddress(pxbuffer);
+
+	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+	CGContextRef context = CGBitmapContextCreate(
+												 pxdata, frameSize.width, frameSize.height,
+												 8, CVPixelBufferGetBytesPerRow(pxbuffer),
+												 rgbColorSpace,
+												 (CGBitmapInfo)kCGBitmapByteOrder32Little |
+												 kCGImageAlphaPremultipliedFirst);
+
+	CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(image),
+										   CGImageGetHeight(image)), image);
+	CGColorSpaceRelease(rgbColorSpace);
+	CGContextRelease(context);
+
+	CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
+
+	return pxbuffer;
+}
+
++ (CMSampleBufferRef)sampleBufferFromCGImage:(CGImageRef)image
+{
+	CVPixelBufferRef pixelBuffer = [self pixelBufferFromCGImage:image];
+	CMSampleBufferRef newSampleBuffer = NULL;
+	CMSampleTimingInfo timimgInfo = kCMTimingInfoInvalid;
+	CMVideoFormatDescriptionRef videoInfo = NULL;
+	CMVideoFormatDescriptionCreateForImageBuffer(
+												 NULL, pixelBuffer, &videoInfo);
+	CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault,
+									   pixelBuffer,
+									   true,
+									   NULL,
+									   NULL,
+									   videoInfo,
+									   &timimgInfo,
+									   &newSampleBuffer);
+
+	return newSampleBuffer;
+}
+
 - (void)processAsset:(AVURLAsset *)asset
 {
 	self.currentAsset = asset;
@@ -120,6 +182,31 @@
 						[self.progressIndicator startAnimation:nil];
 					});
 
+					NSError *error = nil;
+					NSString *outFile = [NSString stringWithFormat:@"/Users/valentine/Pictures/SSM/rolling-shutter-%@.mov", @([[NSDate date] timeIntervalSince1970])];
+					self.outputAssetWriter = [AVAssetWriter assetWriterWithURL:[NSURL fileURLWithPath:outFile] fileType:AVFileTypeQuickTimeMovie error:&error];
+					if (error != nil)
+					{
+						NSLog(@"Failed to create asset writer: %@", error);
+						return;
+					}
+
+					NSDictionary *settings = @{ AVVideoCodecKey : AVVideoCodecH264, AVVideoWidthKey : @(self.currentImageSize.width), AVVideoHeightKey : @(self.currentImageSize.height) };
+					AVAssetWriterInput *output = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
+					output.expectsMediaDataInRealTime = YES;
+					AVAssetWriterInputPixelBufferAdaptor *adaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:output sourcePixelBufferAttributes:nil];
+					[self.outputAssetWriter addInput:output];
+
+					BOOL ok = [self.outputAssetWriter startWriting];
+
+					[self.outputAssetWriter startSessionAtSourceTime:kCMTimeZero];
+
+					if (!ok)
+					{
+						NSLog(@"Failed to start writing: %@", self.outputAssetWriter.error);
+						return;
+					}
+
 					/* read off the samples */
 					CMSampleBufferRef buffer;
 					while ([assetReader status] == AVAssetReaderStatusReading)
@@ -130,6 +217,12 @@
 
 							NSImage *currentImage = [NSImage imageWithSampleBuffer:buffer];
 							NSImage *partialImage = nil;//[self partialImageWithSource:currentImage];
+
+							if (currentImage != nil)
+							{
+								CVPixelBufferRef outBuffer = [RollingShutterViewController pixelBufferFromCGImage:[currentImage CGImageForProposedRect:nil context:nil hints:nil]];
+								[adaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(i, 30)]; // 30 FPS
+							}
 
 							if (partialImage != nil)
 							{
@@ -175,6 +268,9 @@
 					NSTimeInterval duration = [endDate timeIntervalSinceDate:startDate];
 //					[self saveCurrentImage];
 					self.internalPartialImg = nil;
+					[self.outputAssetWriter finishWritingWithCompletionHandler:^{
+						NSLog(@"Writing finished!");
+					}];
 					NSLog(@"Processed %@ frames in %@ seconds, FPS: %@", @(i), @(duration), @(i/duration));
 
 					dispatch_async(dispatch_get_main_queue(), ^{

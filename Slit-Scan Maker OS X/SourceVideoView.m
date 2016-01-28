@@ -159,7 +159,16 @@
 	else
 	{
 		[[NSColor whiteColor] setFill];
+
 		NSRectFill(self.bounds);
+
+		[[NSColor blackColor] set];
+
+		NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+		style.alignment = NSCenterTextAlignment;
+
+		NSDictionary *attrs = @{ NSFontAttributeName : [NSFont systemFontOfSize:20], NSParagraphStyleAttributeName : style };
+		[[NSString stringWithFormat:@"Drop movie file here!"] drawInRect:self.bounds withAttributes:attrs];
 	}
 
 	if (self.draggingInProgress)
