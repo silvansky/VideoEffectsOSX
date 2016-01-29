@@ -60,4 +60,39 @@
 	return (image);
 }
 
+- (CVPixelBufferRef)pixelBuffer
+{
+	CGImageRef image = [self CGImageForProposedRect:nil context:nil hints:nil];
+
+	CGSize frameSize = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
+	NSDictionary *options = @{ (id)kCVPixelBufferCGImageCompatibilityKey : @YES, (id)kCVPixelBufferCGBitmapContextCompatibilityKey : @YES };
+	CVPixelBufferRef pxbuffer = NULL;
+
+	CVReturn status =
+	CVPixelBufferCreate(
+						kCFAllocatorDefault, frameSize.width, frameSize.height,
+						kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)options,
+						&pxbuffer);
+	NSParameterAssert(status == kCVReturnSuccess && pxbuffer != NULL);
+
+	CVPixelBufferLockBaseAddress(pxbuffer, 0);
+	void *pxdata = CVPixelBufferGetBaseAddress(pxbuffer);
+
+	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+	CGContextRef context = CGBitmapContextCreate(
+												 pxdata, frameSize.width, frameSize.height,
+												 8, CVPixelBufferGetBytesPerRow(pxbuffer),
+												 rgbColorSpace,
+												 (CGBitmapInfo)kCGBitmapByteOrder32Little |
+												 kCGImageAlphaPremultipliedFirst);
+
+	CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image)), image);
+	CGColorSpaceRelease(rgbColorSpace);
+	CGContextRelease(context);
+
+	CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
+
+	return pxbuffer;
+}
+
 @end

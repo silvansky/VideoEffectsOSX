@@ -27,6 +27,9 @@
 
 @property (atomic, strong) NSImage *internalPartialImg;
 @property (atomic, strong) NSImage *originalPreviewImage;
+@property (atomic, strong) NSMutableArray<NSImage *> *imagesQueue;
+@property (atomic, assign) NSInteger imagesQueueLength;
+@property (nonatomic, assign) NSInteger currentLine;
 
 @property (nonatomic, assign) BOOL processing;
 @property (nonatomic, assign) BOOL stopAfterNextFrame;
@@ -39,6 +42,8 @@
 
 - (void)viewDidLoad
 {
+	self.imagesQueue = [NSMutableArray array];
+
 	self.sourceVideoView.showSlit = NO;
 	self.sourceVideoView.verticalSlit = YES;
 	self.sourceVideoView.slitPosition = 50;
@@ -63,10 +68,19 @@
 		size.width = CGImageGetWidth(cgImage);
 		size.height = CGImageGetHeight(cgImage);
 
+		self.imagesQueueLength = (NSInteger)size.height;
+
 		self.currentImageSize = size;
 
-		self.originalPreviewImage = [[NSImage alloc] initWithCGImage:cgImage size:size];
+		NSImage *firstFrame = [[NSImage alloc] initWithCGImage:cgImage size:size];
+		self.originalPreviewImage = firstFrame;
+		self.internalPartialImg = firstFrame;
 		[self.sourceVideoView updatePreview:self.originalPreviewImage];
+
+		self.imagesQueue = [NSMutableArray arrayWithCapacity:self.imagesQueueLength];
+		[@(self.imagesQueueLength) times:^{
+			[self.imagesQueue addObject:firstFrame];
+		}];
 
 		self.currentAsset = asset;
 		CGImageRelease(cgImage);
@@ -93,65 +107,61 @@
 
 #pragma mark - Private
 
-+ (CVPixelBufferRef)pixelBufferFromCGImage:(CGImageRef)image
+- (NSImage *)partialImageWithSource:(NSImage *)source
 {
-	CGSize frameSize = CGSizeMake(CGImageGetWidth(image),
-								  CGImageGetHeight(image));
-	NSDictionary *options =
-	[NSDictionary dictionaryWithObjectsAndKeys:
-	 [NSNumber numberWithBool:YES],
-	 kCVPixelBufferCGImageCompatibilityKey,
-	 [NSNumber numberWithBool:YES],
-	 kCVPixelBufferCGBitmapContextCompatibilityKey,
-	 nil];
-	CVPixelBufferRef pxbuffer = NULL;
+	if (source == nil)
+	{
+		return nil;
+	}
 
-	CVReturn status =
-	CVPixelBufferCreate(
-						kCFAllocatorDefault, frameSize.width, frameSize.height,
-						kCVPixelFormatType_32ARGB, (__bridge CFDictionaryRef)options,
-						&pxbuffer);
-	NSParameterAssert(status == kCVReturnSuccess && pxbuffer != NULL);
+	[self.imagesQueue removeObjectAtIndex:0];
+	[self.imagesQueue addObject:source];
 
-	CVPixelBufferLockBaseAddress(pxbuffer, 0);
-	void *pxdata = CVPixelBufferGetBaseAddress(pxbuffer);
+	CGImageRef sourceQuartzImage = [source CGImageForProposedRect:nil context:nil hints:nil];
+	size_t width = CGImageGetWidth(sourceQuartzImage);
+	size_t height = CGImageGetHeight(sourceQuartzImage);
+	CGSize size = CGSizeMake((CGFloat)width, (CGFloat)height);
+	CGRect rect;
+	rect.origin = CGPointMake(0.f, 0.f);
+	rect.size = size;
 
-	CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-	CGContextRef context = CGBitmapContextCreate(
-												 pxdata, frameSize.width, frameSize.height,
-												 8, CVPixelBufferGetBytesPerRow(pxbuffer),
-												 rgbColorSpace,
-												 (CGBitmapInfo)kCGBitmapByteOrder32Little |
-												 kCGImageAlphaPremultipliedFirst);
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 0, colorSpace, kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedFirst);
 
-	CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(image),
-										   CGImageGetHeight(image)), image);
-	CGColorSpaceRelease(rgbColorSpace);
-	CGContextRelease(context);
+	if (!ctx)
+	{
+		NSLog(@"Hey, no context in partialImageWithSource! Debug me plz. =/");
+	}
 
-	CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
+	for (NSInteger lineIndex = 0; lineIndex < self.imagesQueueLength; lineIndex++)
+	{
+		NSImage *currentFrame = self.imagesQueue[lineIndex];
+		sourceQuartzImage = [currentFrame CGImageForProposedRect:nil context:nil hints:nil];
 
-	return pxbuffer;
-}
+		CGRect lineRect = CGRectMake(0.f, (CGFloat)lineIndex, (CGFloat)width, 1.f);
 
-+ (CMSampleBufferRef)sampleBufferFromCGImage:(CGImageRef)image
-{
-	CVPixelBufferRef pixelBuffer = [self pixelBufferFromCGImage:image];
-	CMSampleBufferRef newSampleBuffer = NULL;
-	CMSampleTimingInfo timimgInfo = kCMTimingInfoInvalid;
-	CMVideoFormatDescriptionRef videoInfo = NULL;
-	CMVideoFormatDescriptionCreateForImageBuffer(
-												 NULL, pixelBuffer, &videoInfo);
-	CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault,
-									   pixelBuffer,
-									   true,
-									   NULL,
-									   NULL,
-									   videoInfo,
-									   &timimgInfo,
-									   &newSampleBuffer);
+		CGRect lineDrawRect = CGRectMake(0.f, (CGFloat)(height - lineIndex), (CGFloat)width, 1.f);
 
-	return newSampleBuffer;
+		CGImageRef line = CGImageCreateWithImageInRect(sourceQuartzImage, lineRect);
+
+		CGContextDrawImage(ctx, lineDrawRect, line);
+
+		CGImageRelease(line);
+	}
+
+	NSImage *image = nil;
+
+	CGImageRef quartzImage = CGBitmapContextCreateImage(ctx);
+
+	CGContextRelease(ctx);
+	CGColorSpaceRelease(colorSpace);
+
+	image = [[NSImage alloc] initWithCGImage:quartzImage size:size];
+
+	CGImageRelease(quartzImage);
+
+
+	return image;
 }
 
 - (void)processAsset:(AVURLAsset *)asset
@@ -183,7 +193,7 @@
 					});
 
 					NSError *error = nil;
-					NSString *outFile = [NSString stringWithFormat:@"/Users/valentine/Pictures/SSM/rolling-shutter-%@.mov", @([[NSDate date] timeIntervalSince1970])];
+					NSString *outFile = [[NSString stringWithFormat:@"~/Pictures/SSM/rolling-shutter-%@.mov", @([[NSDate date] timeIntervalSince1970])] stringByExpandingTildeInPath];
 					self.outputAssetWriter = [AVAssetWriter assetWriterWithURL:[NSURL fileURLWithPath:outFile] fileType:AVFileTypeQuickTimeMovie error:&error];
 					if (error != nil)
 					{
@@ -216,21 +226,18 @@
 							buffer = [assetReaderOutput copyNextSampleBuffer];
 
 							NSImage *currentImage = [NSImage imageWithSampleBuffer:buffer];
-							NSImage *partialImage = nil;//[self partialImageWithSource:currentImage];
-
-							if (currentImage != nil)
-							{
-								CVPixelBufferRef outBuffer = [RollingShutterViewController pixelBufferFromCGImage:[currentImage CGImageForProposedRect:nil context:nil hints:nil]];
-								[adaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(i, 30)]; // 30 FPS
-								CVPixelBufferRelease(outBuffer);
-							}
+							NSImage *partialImage = [self partialImageWithSource:currentImage];
 
 							if (partialImage != nil)
 							{
 								self.internalPartialImg = partialImage;
+
+								CVPixelBufferRef outBuffer = [partialImage pixelBuffer];
+								[adaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(i, 30)]; // 30 FPS
+								CVPixelBufferRelease(outBuffer);
 							}
 
-							if (partialImage && (i % 100 == 0))
+							if (currentImage && (i % 100 == 0))
 							{
 								dispatch_async(dispatch_get_main_queue(), ^{
 									@autoreleasepool {
@@ -241,29 +248,31 @@
 							}
 
 							i++;
-							//self.currentLine++;
+							self.currentLine++;
 
 //							BOOL verticalSlit = ((!self.movingLine && self.verticalSlit) || (self.movingLine && (self.slitDirection == LeftToRight || self.slitDirection == RightToLeft)));
-//							CGFloat maxLines = (verticalSlit ? self.currentImageSize.width : self.currentImageSize.height);
+							CGFloat maxLines = self.currentImageSize.height;
 
-//							if (self.currentLine > maxLines)
-//							{
-//								self.currentLine = 0;
-//								[self saveCurrentImage];
-//								self.internalPartialImg = nil;
-//							}
+							if (self.currentLine > maxLines)
+							{
+								self.currentLine = 0;
+							}
 
 							if (buffer != NULL)
 							{
 								CFRelease(buffer);
 							}
+
 							if (self.stopAfterNextFrame)
 							{
+								[assetReader cancelReading];
 								self.stopAfterNextFrame = NO;
 								break;
 							}
 						} // pool
 					}
+
+					[self.imagesQueue removeAllObjects];
 
 					NSDate *endDate = [NSDate date];
 					NSTimeInterval duration = [endDate timeIntervalSinceDate:startDate];

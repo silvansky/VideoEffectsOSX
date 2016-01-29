@@ -14,4 +14,6 @@
 
 + (instancetype)imageWithSampleBuffer:(CMSampleBufferRef)buffer;
 
+- (CVPixelBufferRef)pixelBuffer;
+
 @end
