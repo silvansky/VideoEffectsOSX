@@ -222,6 +222,7 @@
 							{
 								CVPixelBufferRef outBuffer = [RollingShutterViewController pixelBufferFromCGImage:[currentImage CGImageForProposedRect:nil context:nil hints:nil]];
 								[adaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(i, 30)]; // 30 FPS
+								CVPixelBufferRelease(outBuffer);
 							}
 
 							if (partialImage != nil)
