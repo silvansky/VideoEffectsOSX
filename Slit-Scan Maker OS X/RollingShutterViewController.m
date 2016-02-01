@@ -14,12 +14,31 @@
 
 @import AVFoundation;
 
+typedef enum : NSUInteger {
+	LeftToRight,
+	RightToLeft,
+	TopToBottom,
+	BottomToTop
+} ShutterDirection;
+
 @interface RollingShutterViewController ()
 
 @property (weak) IBOutlet SourceVideoView *sourceVideoView;
 @property (weak) IBOutlet NSImageView *resultingImageView;
 @property (weak) IBOutlet NSButton *startButton;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
+
+@property (weak) IBOutlet NSBox *shutterDirectionBox;
+@property (weak) IBOutlet NSBox *outputFPSBox;
+
+@property (weak) IBOutlet NSButton *shutterDirectionLtoRRadioButton;
+@property (weak) IBOutlet NSButton *shutterDirectionRtoLRadioButton;
+@property (weak) IBOutlet NSButton *shutterDirectionTtoBRadioButton;
+@property (weak) IBOutlet NSButton *shutterDirectionBtoTRadioButton;
+
+@property (weak) IBOutlet NSButton *outputFPS30RadioButton;
+@property (weak) IBOutlet NSButton *outputFPS60RadioButton;
+@property (weak) IBOutlet NSButton *outputFPS120RadioButton;
 
 @property (nonatomic, strong) AVURLAsset *currentAsset;
 @property (nonatomic, strong) AVAssetWriter *outputAssetWriter;
@@ -30,18 +49,63 @@
 @property (atomic, strong) NSMutableArray<NSImage *> *imagesQueue;
 @property (atomic, assign) NSInteger imagesQueueLength;
 @property (nonatomic, assign) NSInteger currentLine;
+@property (nonatomic, assign) int32_t outputFPS;
+@property (nonatomic, assign) ShutterDirection shutterDirection;
+
+@property (nonatomic, strong) NSArray<NSControl *> *controls;
 
 @property (nonatomic, assign) BOOL processing;
 @property (nonatomic, assign) BOOL stopAfterNextFrame;
 
 - (void)processAsset:(AVURLAsset *)asset;
+- (void)setControlsEnabled:(BOOL)enabled;
 
 @end
 
 @implementation RollingShutterViewController
 
+- (IBAction)shutterDirectionChanged:(id)sender
+{
+	ShutterDirection d = LeftToRight;
+
+	if (sender == self.shutterDirectionRtoLRadioButton)
+	{
+		d = RightToLeft;
+	}
+	else if (sender == self.shutterDirectionTtoBRadioButton)
+	{
+		d = TopToBottom;
+	}
+	else if (sender == self.shutterDirectionBtoTRadioButton)
+	{
+		d = BottomToTop;
+	}
+
+	self.shutterDirection = d;
+}
+
+- (IBAction)outputFPSChanged:(id)sender
+{
+	int32_t fps = 30;
+
+	if (sender == self.outputFPS60RadioButton)
+	{
+		fps = 60;
+	}
+	else if (sender == self.outputFPS120RadioButton)
+	{
+		fps = 120;
+	}
+
+	self.outputFPS = fps;
+}
+
 - (void)viewDidLoad
 {
+	self.outputFPS = 30;
+
+	self.controls = @[self.shutterDirectionBtoTRadioButton, self.shutterDirectionLtoRRadioButton, self.shutterDirectionRtoLRadioButton, self.shutterDirectionTtoBRadioButton, self.outputFPS120RadioButton, self.outputFPS30RadioButton, self.outputFPS60RadioButton];
+
 	self.imagesQueue = [NSMutableArray array];
 
 	self.sourceVideoView.showSlit = NO;
@@ -182,6 +246,7 @@
 			NSInteger i = 0;
 //			self.currentLine = 0;
 			NSDate *startDate = [NSDate date];
+			dispatch_queue_t dataQueue = dispatch_queue_create("add-data-to-output", DISPATCH_QUEUE_SERIAL);
 			if ([assetReader canAddOutput:assetReaderOutput])
 			{
 				[assetReader addOutput:assetReaderOutput];
@@ -193,7 +258,8 @@
 					});
 
 					NSError *error = nil;
-					NSString *outFile = [[NSString stringWithFormat:@"~/Pictures/SSM/rolling-shutter-%@.mov", @([[NSDate date] timeIntervalSince1970])] stringByExpandingTildeInPath];
+					NSString *path = [@"~/Pictures/Slit-Scan Maker/" stringByExpandingTildeInPath];
+					NSString *outFile = [NSString stringWithFormat:@"%@/rolling-shutter-%@.mov", path, @([[NSDate date] timeIntervalSince1970])];
 					self.outputAssetWriter = [AVAssetWriter assetWriterWithURL:[NSURL fileURLWithPath:outFile] fileType:AVFileTypeQuickTimeMovie error:&error];
 					if (error != nil)
 					{
@@ -233,11 +299,25 @@
 								self.internalPartialImg = partialImage;
 
 								CVPixelBufferRef outBuffer = [partialImage pixelBuffer];
-								[adaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(i, 30)]; // 30 FPS
-								CVPixelBufferRelease(outBuffer);
+
+								dispatch_block_t writeBlock = ^{
+									[adaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(i, self.outputFPS)];
+									CVPixelBufferRelease(outBuffer);
+								};
+
+								// TODO: make buffer of buffers
+								if (!output.readyForMoreMediaData)
+								{
+									[output requestMediaDataWhenReadyOnQueue:dataQueue usingBlock:writeBlock];
+									NSLog(@"Not ready! Help! %@", self.outputAssetWriter.error);
+								}
+								else
+								{
+									dispatch_async(dataQueue, writeBlock);
+								}
 							}
 
-							if (currentImage && (i % 100 == 0))
+							if (currentImage && (i % 5 == 0))
 							{
 								dispatch_async(dispatch_get_main_queue(), ^{
 									@autoreleasepool {
@@ -304,5 +384,11 @@
 	});
 }
 
+- (void)setControlsEnabled:(BOOL)enabled
+{
+	[self.controls each:^(NSControl *c) {
+		c.enabled = enabled;
+	}];
+}
 
 @end

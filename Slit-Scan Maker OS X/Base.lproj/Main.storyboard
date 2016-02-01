@@ -774,6 +774,152 @@ DQ
 </string>
                                 </buttonCell>
                             </button>
+                            <box title="Shutter Direction" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="cY5-by-gUj">
+                                <rect key="frame" x="17" y="199" width="177" height="135"/>
+                                <view key="contentView" id="yxY-zb-nIm">
+                                    <rect key="frame" x="1" y="1" width="175" height="119"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="aDy-jt-08g">
+                                            <rect key="frame" x="19" y="82" width="138" height="18"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="GHX-BL-BDn"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="radio" title="L to R" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="bEu-5d-Sqf">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="shutterDirectionChanged:" target="HdP-15-TIU" id="9hK-Jj-AaU"/>
+                                            </connections>
+                                        </button>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="nt9-3m-HGf">
+                                            <rect key="frame" x="19" y="60" width="138" height="18"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="cqv-XN-4J7"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="radio" title="R to L" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="XHY-60-X1D">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="shutterDirectionChanged:" target="HdP-15-TIU" id="acg-H4-xMa"/>
+                                            </connections>
+                                        </button>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="a3C-Kt-dpM">
+                                            <rect key="frame" x="19" y="38" width="138" height="18"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="F1b-mt-pEa"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="radio" title="T to B" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="TCC-Od-ylk">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="shutterDirectionChanged:" target="HdP-15-TIU" id="FGa-52-MMq"/>
+                                            </connections>
+                                        </button>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="r2j-G3-muL">
+                                            <rect key="frame" x="19" y="16" width="138" height="18"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="Fa5-Jh-xCH"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="radio" title="B to T" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="SpK-Mu-VQY">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="shutterDirectionChanged:" target="HdP-15-TIU" id="aTK-Va-jwh"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="r2j-G3-muL" secondAttribute="trailing" constant="20" id="2LG-q0-met"/>
+                                        <constraint firstItem="aDy-jt-08g" firstAttribute="leading" secondItem="yxY-zb-nIm" secondAttribute="leading" constant="20" id="6MG-A3-w3F"/>
+                                        <constraint firstItem="nt9-3m-HGf" firstAttribute="leading" secondItem="yxY-zb-nIm" secondAttribute="leading" constant="20" id="SMB-11-XUW"/>
+                                        <constraint firstAttribute="trailing" secondItem="nt9-3m-HGf" secondAttribute="trailing" constant="20" id="WSK-dJ-AYu"/>
+                                        <constraint firstItem="r2j-G3-muL" firstAttribute="top" secondItem="a3C-Kt-dpM" secondAttribute="bottom" constant="6" id="abd-RK-NcB"/>
+                                        <constraint firstAttribute="trailing" secondItem="aDy-jt-08g" secondAttribute="trailing" constant="20" id="bux-0t-itP"/>
+                                        <constraint firstAttribute="trailing" secondItem="a3C-Kt-dpM" secondAttribute="trailing" constant="20" id="h4A-3A-tOD"/>
+                                        <constraint firstItem="a3C-Kt-dpM" firstAttribute="leading" secondItem="yxY-zb-nIm" secondAttribute="leading" constant="20" id="ieJ-R7-8So"/>
+                                        <constraint firstItem="aDy-jt-08g" firstAttribute="top" secondItem="yxY-zb-nIm" secondAttribute="top" constant="20" id="nao-1m-ZiE"/>
+                                        <constraint firstItem="nt9-3m-HGf" firstAttribute="top" secondItem="aDy-jt-08g" secondAttribute="bottom" constant="6" id="tfn-jm-scd"/>
+                                        <constraint firstItem="r2j-G3-muL" firstAttribute="leading" secondItem="yxY-zb-nIm" secondAttribute="leading" constant="20" id="v3c-1h-zdH"/>
+                                        <constraint firstItem="a3C-Kt-dpM" firstAttribute="top" secondItem="nt9-3m-HGf" secondAttribute="bottom" constant="6" id="wEv-b4-GnK"/>
+                                    </constraints>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="131" id="W6f-fF-PdM"/>
+                                    <constraint firstAttribute="width" constant="171" id="nQi-WW-4ll"/>
+                                </constraints>
+                                <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </box>
+                            <box title="Output FPS" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="NV4-pn-5tb">
+                                <rect key="frame" x="196" y="199" width="177" height="135"/>
+                                <view key="contentView" id="iFV-gY-hp3">
+                                    <rect key="frame" x="1" y="1" width="175" height="119"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="g95-gx-rlW">
+                                            <rect key="frame" x="19" y="82" width="138" height="18"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="DNn-9P-ZMp"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="radio" title="30 FPS" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="WO2-8l-eBF">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="outputFPSChanged:" target="HdP-15-TIU" id="80z-dk-JbU"/>
+                                            </connections>
+                                        </button>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="ODg-iS-ilJ">
+                                            <rect key="frame" x="19" y="60" width="138" height="18"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="Gfw-Jj-Uoi"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="radio" title="60 FPS" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="vFk-46-1xT">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="outputFPSChanged:" target="HdP-15-TIU" id="pLJ-WU-FZh"/>
+                                            </connections>
+                                        </button>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="u18-Hb-uli">
+                                            <rect key="frame" x="19" y="38" width="138" height="18"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="16" id="4ZB-T3-PZq"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="radio" title="120 FPS" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="yZM-ec-x2L">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="outputFPSChanged:" target="HdP-15-TIU" id="270-w9-FK4"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="g95-gx-rlW" secondAttribute="trailing" constant="20" id="3NQ-kH-mT4"/>
+                                        <constraint firstItem="u18-Hb-uli" firstAttribute="top" secondItem="ODg-iS-ilJ" secondAttribute="bottom" constant="6" id="404-Dk-qnj"/>
+                                        <constraint firstItem="u18-Hb-uli" firstAttribute="leading" secondItem="iFV-gY-hp3" secondAttribute="leading" constant="20" id="6sU-uu-BCl"/>
+                                        <constraint firstItem="ODg-iS-ilJ" firstAttribute="top" secondItem="g95-gx-rlW" secondAttribute="bottom" constant="6" id="Awy-qQ-yQN"/>
+                                        <constraint firstItem="g95-gx-rlW" firstAttribute="top" secondItem="iFV-gY-hp3" secondAttribute="top" constant="20" id="Jfe-Bf-NPg"/>
+                                        <constraint firstItem="g95-gx-rlW" firstAttribute="leading" secondItem="iFV-gY-hp3" secondAttribute="leading" constant="20" id="aEH-Tl-rC9"/>
+                                        <constraint firstItem="ODg-iS-ilJ" firstAttribute="leading" secondItem="iFV-gY-hp3" secondAttribute="leading" constant="20" id="aEP-Xz-Zh6"/>
+                                        <constraint firstAttribute="trailing" secondItem="u18-Hb-uli" secondAttribute="trailing" constant="20" id="qqF-x9-yux"/>
+                                        <constraint firstAttribute="trailing" secondItem="ODg-iS-ilJ" secondAttribute="trailing" constant="20" id="vBp-AU-Ia2"/>
+                                    </constraints>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="171" id="KRa-4J-peG"/>
+                                    <constraint firstAttribute="height" constant="131" id="N2n-mv-Wo7"/>
+                                </constraints>
+                                <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </box>
                         </subviews>
                         <constraints>
                             <constraint firstItem="TEj-n1-vkW" firstAttribute="centerY" secondItem="G1q-LV-eUG" secondAttribute="centerY" id="1gA-lf-YBO"/>
@@ -781,17 +927,30 @@ DQ
                             <constraint firstAttribute="bottom" secondItem="G1q-LV-eUG" secondAttribute="bottom" constant="20" id="C10-0r-vaa"/>
                             <constraint firstItem="zyJ-5l-gNb" firstAttribute="top" secondItem="gpN-Zw-z4s" secondAttribute="top" constant="20" id="Gt1-Aa-T5K"/>
                             <constraint firstAttribute="trailing" secondItem="zyJ-5l-gNb" secondAttribute="trailing" constant="20" id="NwS-3Z-gGa"/>
+                            <constraint firstItem="NV4-pn-5tb" firstAttribute="top" secondItem="zyJ-5l-gNb" secondAttribute="bottom" constant="8" id="XkW-ST-UXW"/>
+                            <constraint firstItem="cY5-by-gUj" firstAttribute="top" secondItem="M43-tk-WxK" secondAttribute="bottom" constant="8" id="Yxz-m8-cIU"/>
                             <constraint firstItem="M43-tk-WxK" firstAttribute="top" secondItem="gpN-Zw-z4s" secondAttribute="top" constant="20" id="bqW-XR-rEo"/>
                             <constraint firstItem="G1q-LV-eUG" firstAttribute="leading" secondItem="gpN-Zw-z4s" secondAttribute="leading" constant="20" id="diz-dd-vDz"/>
                             <constraint firstItem="M43-tk-WxK" firstAttribute="leading" secondItem="gpN-Zw-z4s" secondAttribute="leading" constant="20" id="eDk-qt-HUc"/>
                             <constraint firstItem="TEj-n1-vkW" firstAttribute="leading" secondItem="G1q-LV-eUG" secondAttribute="trailing" constant="8" id="haP-gG-5zz"/>
                             <constraint firstItem="zyJ-5l-gNb" firstAttribute="bottom" secondItem="M43-tk-WxK" secondAttribute="bottom" id="m9N-P7-5zE"/>
+                            <constraint firstItem="NV4-pn-5tb" firstAttribute="leading" secondItem="cY5-by-gUj" secondAttribute="trailing" constant="8" id="mpb-tW-Xad"/>
                             <constraint firstItem="zyJ-5l-gNb" firstAttribute="leading" secondItem="M43-tk-WxK" secondAttribute="trailing" constant="8" id="v0w-e8-8mI"/>
+                            <constraint firstItem="cY5-by-gUj" firstAttribute="leading" secondItem="gpN-Zw-z4s" secondAttribute="leading" constant="20" id="yV0-ld-qMB"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="outputFPS120RadioButton" destination="u18-Hb-uli" id="roK-hp-B4D"/>
+                        <outlet property="outputFPS30RadioButton" destination="g95-gx-rlW" id="h72-rn-TIQ"/>
+                        <outlet property="outputFPS60RadioButton" destination="ODg-iS-ilJ" id="GLd-2G-Aab"/>
+                        <outlet property="outputFPSBox" destination="NV4-pn-5tb" id="X0G-fg-r3Q"/>
                         <outlet property="progressIndicator" destination="TEj-n1-vkW" id="fDD-Qz-aHH"/>
                         <outlet property="resultingImageView" destination="zyJ-5l-gNb" id="lCc-Ss-BZB"/>
+                        <outlet property="shutterDirectionBox" destination="cY5-by-gUj" id="qCg-bb-xW2"/>
+                        <outlet property="shutterDirectionBtoTRadioButton" destination="r2j-G3-muL" id="HEA-dY-84N"/>
+                        <outlet property="shutterDirectionLtoRRadioButton" destination="aDy-jt-08g" id="1oM-zA-Ycu"/>
+                        <outlet property="shutterDirectionRtoLRadioButton" destination="nt9-3m-HGf" id="3NE-Vn-fUp"/>
+                        <outlet property="shutterDirectionTtoBRadioButton" destination="a3C-Kt-dpM" id="fLc-Zn-Vw1"/>
                         <outlet property="sourceVideoView" destination="M43-tk-WxK" id="hiA-IY-HTZ"/>
                         <outlet property="startButton" destination="G1q-LV-eUG" id="MX7-QL-8wv"/>
                     </connections>

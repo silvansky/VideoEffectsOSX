@@ -20,6 +20,12 @@
 
 - (void)viewDidLoad
 {
+	NSString *path = [@"~/Pictures/Slit-Scan Maker/" stringByExpandingTildeInPath];
+	if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+	{
+		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+	}
+
 	@weakify(self);
 	self.slitScanButton.rac_command = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id __unused input) {
 		@strongify(self);

@@ -66,7 +66,7 @@
 	static __strong NSArray *_extensions = nil;
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		_extensions = @[ @"mov", @"mp4", @"avi" ];
+		_extensions = @[ @"mov", @"mp4", @"m4v", @"qt" ];
 	});
 
 	return _extensions;

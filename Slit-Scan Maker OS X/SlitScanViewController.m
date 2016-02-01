@@ -396,7 +396,8 @@ typedef enum : NSUInteger {
 	NSData *imageData = [self.internalPartialImg TIFFRepresentation];
 	NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imageData];
 	NSData *data = [imageRep representationUsingType:NSPNGFileType properties:@{}];
-	NSString *fileName = [NSString stringWithFormat:@"/Users/valentine/Pictures/SSM/slit-scan-%@.png", @([[NSDate date] timeIntervalSince1970])];
+	NSString *path = [@"~/Pictures/Slit-Scan Maker/" stringByExpandingTildeInPath];
+	NSString *fileName = [NSString stringWithFormat:@"%@/slit-scan-%@.png", path, @([[NSDate date] timeIntervalSince1970])];
 	BOOL ok = [data writeToFile:fileName atomically:NO];
 	NSLog(@"Saved image to %@ (%@)", fileName, @(ok));
 }
