@@ -142,9 +142,6 @@ typedef enum : NSUInteger {
 		[self.sourceVideoView updatePreview:self.originalPreviewImage];
 
 		self.imagesQueue = [NSMutableArray arrayWithCapacity:self.imagesQueueLength];
-		[@(self.imagesQueueLength) times:^{
-			[self.imagesQueue addObject:firstFrame];
-		}];
 
 		self.currentAsset = asset;
 		CGImageRelease(cgImage);
@@ -236,6 +233,11 @@ typedef enum : NSUInteger {
 		@autoreleasepool
 		{
 			@strongify(self);
+
+			[@(self.imagesQueueLength) times:^{
+				[self.imagesQueue addObject:self.originalPreviewImage];
+			}];
+
 			NSError *error = nil;
 			AVAssetReader *assetReader = [[AVAssetReader alloc] initWithAsset:self.currentAsset error:&error];
 			AVAssetTrack *videoTrack = [self.currentAsset tracksWithMediaType:AVMediaTypeVideo][0];
