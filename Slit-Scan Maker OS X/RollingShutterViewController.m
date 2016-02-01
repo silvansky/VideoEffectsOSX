@@ -153,6 +153,7 @@ typedef enum : NSUInteger {
 		@strongify(self);
 		if (!self.processing)
 		{
+			[self setControlsEnabled:NO];
 			self.processing = YES;
 			self.startButton.title = @"Stop";
 			[self processAsset:self.currentAsset];
@@ -372,7 +373,7 @@ typedef enum : NSUInteger {
 							self.processing = NO;
 							self.startButton.title = @"Start";
 							[self.sourceVideoView updatePreview:self.originalPreviewImage];
-//							[self updateBoxes];
+							[self setControlsEnabled:YES];
 						}
 					});
 				}
