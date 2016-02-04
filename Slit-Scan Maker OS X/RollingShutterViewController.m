@@ -40,29 +40,49 @@ typedef enum : NSUInteger {
 @property (weak) IBOutlet NSButton *outputFPS60RadioButton;
 @property (weak) IBOutlet NSButton *outputFPS120RadioButton;
 
-@property (nonatomic, strong) AVURLAsset *currentAsset;
-@property (nonatomic, strong) AVAssetWriter *outputAssetWriter;
-@property (nonatomic, assign) NSSize currentImageSize;
+@property (weak) IBOutlet NSButton *skipFirstFramesCheckButton;
+
+@property (atomic, strong) AVURLAsset *currentAsset;
+@property (atomic, strong) AVAssetReader *assetReader;
+
+@property (atomic, strong) AVAssetWriter *outputAssetWriter;
+@property (atomic, strong) AVAssetWriterInput *outputWriterInput;
+@property (atomic, strong) AVAssetReaderTrackOutput *assetReaderOutput;
+@property (atomic, strong) AVAssetWriterInputPixelBufferAdaptor *writerAdaptor;
+
+@property (atomic, strong) NSDate *startDate;
+
+@property (atomic, assign) NSSize currentImageSize;
 
 @property (atomic, strong) NSImage *internalPartialImg;
 @property (atomic, strong) NSImage *originalPreviewImage;
-@property (atomic, strong) NSMutableArray<NSImage *> *imagesQueue;
+@property (atomic, strong) NSMutableArray *imagesQueue;
 @property (atomic, assign) NSInteger imagesQueueLength;
-@property (nonatomic, assign) NSInteger currentLine;
+@property (atomic, assign) NSInteger currentFrameIndex;
+@property (atomic, assign) BOOL writingQueueRequested;
+
 @property (nonatomic, assign) int32_t outputFPS;
 @property (nonatomic, assign) ShutterDirection shutterDirection;
+@property (nonatomic, assign, readonly) BOOL verticalShutter;
 
 @property (nonatomic, strong) NSArray<NSControl *> *controls;
 
 @property (nonatomic, assign) BOOL processing;
+@property (nonatomic, assign) BOOL skipFirstFrames;
 @property (nonatomic, assign) BOOL stopAfterNextFrame;
 
 - (void)processAsset:(AVURLAsset *)asset;
 - (void)setControlsEnabled:(BOOL)enabled;
+- (void)cleanUp;
 
 @end
 
 @implementation RollingShutterViewController
+
+- (BOOL)verticalShutter
+{
+	return (self.shutterDirection == LeftToRight) || (self.shutterDirection == RightToLeft);
+}
 
 - (IBAction)shutterDirectionChanged:(id)sender
 {
@@ -103,8 +123,18 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad
 {
 	self.outputFPS = 30;
+	self.shutterDirection = BottomToTop;
 
-	self.controls = @[self.shutterDirectionBtoTRadioButton, self.shutterDirectionLtoRRadioButton, self.shutterDirectionRtoLRadioButton, self.shutterDirectionTtoBRadioButton, self.outputFPS120RadioButton, self.outputFPS30RadioButton, self.outputFPS60RadioButton];
+	self.controls = @[
+					  self.shutterDirectionBtoTRadioButton,
+					  self.shutterDirectionLtoRRadioButton,
+					  self.shutterDirectionRtoLRadioButton,
+					  self.shutterDirectionTtoBRadioButton,
+					  self.outputFPS120RadioButton,
+					  self.outputFPS30RadioButton,
+					  self.outputFPS60RadioButton,
+					  self.skipFirstFramesCheckButton
+					  ];
 
 	self.imagesQueue = [NSMutableArray array];
 
@@ -132,16 +162,12 @@ typedef enum : NSUInteger {
 		size.width = CGImageGetWidth(cgImage);
 		size.height = CGImageGetHeight(cgImage);
 
-		self.imagesQueueLength = (NSInteger)size.height;
-
 		self.currentImageSize = size;
 
 		NSImage *firstFrame = [[NSImage alloc] initWithCGImage:cgImage size:size];
 		self.originalPreviewImage = firstFrame;
 		self.internalPartialImg = firstFrame;
 		[self.sourceVideoView updatePreview:self.originalPreviewImage];
-
-		self.imagesQueue = [NSMutableArray arrayWithCapacity:self.imagesQueueLength];
 
 		self.currentAsset = asset;
 		CGImageRelease(cgImage);
@@ -177,9 +203,9 @@ typedef enum : NSUInteger {
 	}
 
 	[self.imagesQueue removeObjectAtIndex:0];
-	[self.imagesQueue addObject:source];
-
 	CGImageRef sourceQuartzImage = [source CGImageForProposedRect:nil context:nil hints:nil];
+	[self.imagesQueue addObject:(__bridge id)sourceQuartzImage];
+
 	size_t width = CGImageGetWidth(sourceQuartzImage);
 	size_t height = CGImageGetHeight(sourceQuartzImage);
 	CGSize size = CGSizeMake((CGFloat)width, (CGFloat)height);
@@ -197,12 +223,30 @@ typedef enum : NSUInteger {
 
 	for (NSInteger lineIndex = 0; lineIndex < self.imagesQueueLength; lineIndex++)
 	{
-		NSImage *currentFrame = self.imagesQueue[lineIndex];
-		sourceQuartzImage = [currentFrame CGImageForProposedRect:nil context:nil hints:nil];
+		sourceQuartzImage = (__bridge CGImageRef)self.imagesQueue[lineIndex];
 
-		CGRect lineRect = CGRectMake(0.f, (CGFloat)lineIndex, (CGFloat)width, 1.f);
+		CGRect lineRect;// = CGRectMake(0.f, (CGFloat)lineIndex, (CGFloat)width, 1.f);
+		CGRect lineDrawRect;// = CGRectMake(0.f, (CGFloat)(height - lineIndex), (CGFloat)width, 1.f);
 
-		CGRect lineDrawRect = CGRectMake(0.f, (CGFloat)(height - lineIndex), (CGFloat)width, 1.f);
+		switch (self.shutterDirection)
+		{
+			case RightToLeft:
+				lineRect = CGRectMake((CGFloat)lineIndex, 0.f, 1.f, (CGFloat)height);
+				lineDrawRect = CGRectMake((CGFloat)lineIndex, 0.f, 1.f, (CGFloat)height);
+				break;
+			case LeftToRight:
+				lineRect = CGRectMake((CGFloat)(width - lineIndex), 0.f, 1.f, (CGFloat)height);
+				lineDrawRect = CGRectMake((CGFloat)(width - lineIndex), 0.f, 1.f, (CGFloat)height);
+				break;
+			case BottomToTop:
+				lineRect = CGRectMake(0.f, (CGFloat)lineIndex, (CGFloat)width, 1.f);
+				lineDrawRect = CGRectMake(0.f, (CGFloat)(height - lineIndex), (CGFloat)width, 1.f);
+				break;
+			case TopToBottom:
+				lineRect = CGRectMake(0.f, (CGFloat)(height - lineIndex), (CGFloat)width, 1.f);
+				lineDrawRect = CGRectMake(0.f, (CGFloat)lineIndex, (CGFloat)width, 1.f);
+				break;
+		}
 
 		CGImageRef line = CGImageCreateWithImageInRect(sourceQuartzImage, lineRect);
 
@@ -222,38 +266,94 @@ typedef enum : NSUInteger {
 
 	CGImageRelease(quartzImage);
 
-
 	return image;
+}
+
+- (CVPixelBufferRef)copyNextBuffer
+{
+	if ([self.assetReader status] == AVAssetReaderStatusReading)
+	{
+		CMSampleBufferRef buffer;
+		@autoreleasepool
+		{
+			buffer = [self.assetReaderOutput copyNextSampleBuffer];
+			CVPixelBufferRef outBuffer = NULL;
+
+			NSImage *currentImage = [NSImage imageWithSampleBuffer:buffer];
+			NSImage *partialImage = [self partialImageWithSource:currentImage];
+
+			if (partialImage != nil)
+			{
+				self.internalPartialImg = partialImage;
+
+				outBuffer = [partialImage pixelBuffer];
+			}
+
+			if (currentImage && (self.currentFrameIndex % 5 == 0))
+			{
+				dispatch_async(dispatch_get_main_queue(), ^{
+					@autoreleasepool {
+						[self.sourceVideoView updatePreview:currentImage];
+						self.resultingImageView.image = partialImage;
+					}
+				});
+			}
+
+			self.currentFrameIndex++;
+
+			if (buffer != NULL)
+			{
+				CFRelease(buffer);
+			}
+
+			if (self.stopAfterNextFrame)
+			{
+				[self.assetReader cancelReading];
+				self.stopAfterNextFrame = NO;
+			}
+
+			return outBuffer;
+		} // pool
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 - (void)processAsset:(AVURLAsset *)asset
 {
+	self.currentFrameIndex = 0;
 	self.currentAsset = asset;
+
+	self.imagesQueueLength = (NSInteger)(self.verticalShutter ? self.currentImageSize.width : self.currentImageSize.height);
+	self.imagesQueue = [NSMutableArray arrayWithCapacity:self.imagesQueueLength];
+
 	@weakify(self);
 	dispatch_async(dispatch_queue_create("processAsset", DISPATCH_QUEUE_SERIAL), ^{
 		@autoreleasepool
 		{
 			@strongify(self);
 
+			CGImageRef originalQuartzImage = [self.originalPreviewImage CGImageForProposedRect:nil context:nil hints:nil];
+
 			[@(self.imagesQueueLength) times:^{
-				[self.imagesQueue addObject:self.originalPreviewImage];
+				[self.imagesQueue addObject:(__bridge id)originalQuartzImage];
 			}];
 
 			NSError *error = nil;
-			AVAssetReader *assetReader = [[AVAssetReader alloc] initWithAsset:self.currentAsset error:&error];
+			self.assetReader = [[AVAssetReader alloc] initWithAsset:self.currentAsset error:&error];
 			AVAssetTrack *videoTrack = [self.currentAsset tracksWithMediaType:AVMediaTypeVideo][0];
 			NSDictionary *dict = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
 
-			AVAssetReaderTrackOutput *assetReaderOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:videoTrack outputSettings:dict];
+			self.assetReaderOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:videoTrack outputSettings:dict];
 
-			NSInteger i = 0;
-//			self.currentLine = 0;
-			NSDate *startDate = [NSDate date];
+			self.startDate = [NSDate date];
 			dispatch_queue_t dataQueue = dispatch_queue_create("add-data-to-output", DISPATCH_QUEUE_SERIAL);
-			if ([assetReader canAddOutput:assetReaderOutput])
+			if ([self.assetReader canAddOutput:self.assetReaderOutput])
 			{
-				[assetReader addOutput:assetReaderOutput];
-				if ([assetReader startReading])
+				[self.assetReader addOutput:self.assetReaderOutput];
+				if ([self.assetReader startReading])
 				{
 					dispatch_sync(dispatch_get_main_queue(), ^{
 						self.sourceVideoView.locked = YES;
@@ -271,10 +371,10 @@ typedef enum : NSUInteger {
 					}
 
 					NSDictionary *settings = @{ AVVideoCodecKey : AVVideoCodecH264, AVVideoWidthKey : @(self.currentImageSize.width), AVVideoHeightKey : @(self.currentImageSize.height) };
-					AVAssetWriterInput *output = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
-					output.expectsMediaDataInRealTime = YES;
-					AVAssetWriterInputPixelBufferAdaptor *adaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:output sourcePixelBufferAttributes:nil];
-					[self.outputAssetWriter addInput:output];
+					self.outputWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
+					self.outputWriterInput.expectsMediaDataInRealTime = YES;
+					self.writerAdaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:self.outputWriterInput sourcePixelBufferAttributes:nil];
+					[self.outputAssetWriter addInput:self.outputWriterInput];
 
 					BOOL ok = [self.outputAssetWriter startWriting];
 
@@ -286,101 +386,30 @@ typedef enum : NSUInteger {
 						return;
 					}
 
-					/* read off the samples */
-					CMSampleBufferRef buffer;
-					while ([assetReader status] == AVAssetReaderStatusReading)
-					{
-						@autoreleasepool
+					dispatch_block_t writeBlock = ^{
+						while (self.outputWriterInput.readyForMoreMediaData)
 						{
-							buffer = [assetReaderOutput copyNextSampleBuffer];
-
-							NSImage *currentImage = [NSImage imageWithSampleBuffer:buffer];
-							NSImage *partialImage = [self partialImageWithSource:currentImage];
-
-							if (partialImage != nil)
+							CVPixelBufferRef outBuffer = [self copyNextBuffer];
+							if (outBuffer != NULL)
 							{
-								self.internalPartialImg = partialImage;
-
-								CVPixelBufferRef outBuffer = [partialImage pixelBuffer];
-
-								dispatch_block_t writeBlock = ^{
-									[adaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(i, self.outputFPS)];
-									CVPixelBufferRelease(outBuffer);
-								};
-
-								// TODO: make buffer of buffers
-								if (!output.readyForMoreMediaData)
-								{
-									[output requestMediaDataWhenReadyOnQueue:dataQueue usingBlock:writeBlock];
-									NSLog(@"Not ready! Help! %@", self.outputAssetWriter.error);
-								}
-								else
-								{
-									dispatch_async(dataQueue, writeBlock);
-								}
+								[self.writerAdaptor appendPixelBuffer:outBuffer withPresentationTime:CMTimeMake(self.currentFrameIndex, self.outputFPS)];
 							}
-
-							if (currentImage && (i % 5 == 0))
+							else
 							{
-								dispatch_async(dispatch_get_main_queue(), ^{
-									@autoreleasepool {
-										[self.sourceVideoView updatePreview:currentImage];
-										self.resultingImageView.image = partialImage;
-									}
-								});
-							}
-
-							i++;
-							self.currentLine++;
-
-//							BOOL verticalSlit = ((!self.movingLine && self.verticalSlit) || (self.movingLine && (self.slitDirection == LeftToRight || self.slitDirection == RightToLeft)));
-							CGFloat maxLines = self.currentImageSize.height;
-
-							if (self.currentLine > maxLines)
-							{
-								self.currentLine = 0;
-							}
-
-							if (buffer != NULL)
-							{
-								CFRelease(buffer);
-							}
-
-							if (self.stopAfterNextFrame)
-							{
-								[assetReader cancelReading];
-								self.stopAfterNextFrame = NO;
+								[self.outputWriterInput markAsFinished];
+								[self cleanUp];
 								break;
 							}
-						} // pool
-					}
-
-					[self.imagesQueue removeAllObjects];
-
-					NSDate *endDate = [NSDate date];
-					NSTimeInterval duration = [endDate timeIntervalSinceDate:startDate];
-//					[self saveCurrentImage];
-					self.internalPartialImg = nil;
-					[self.outputAssetWriter finishWritingWithCompletionHandler:^{
-						NSLog(@"Writing finished!");
-					}];
-					NSLog(@"Processed %@ frames in %@ seconds, FPS: %@", @(i), @(duration), @(i/duration));
-
-					dispatch_async(dispatch_get_main_queue(), ^{
-						@autoreleasepool {
-							self.sourceVideoView.locked = NO;
-							[self.progressIndicator stopAnimation:nil];
-							self.processing = NO;
-							self.startButton.title = @"Start";
-							[self.sourceVideoView updatePreview:self.originalPreviewImage];
-							[self setControlsEnabled:YES];
+							CVPixelBufferRelease(outBuffer);
 						}
-					});
+					};
+
+					[self.outputWriterInput requestMediaDataWhenReadyOnQueue:dataQueue usingBlock:writeBlock];
 				}
 				else
 				{
 					NSLog(@"could not start reading asset.");
-					NSLog(@"reader status: %ld", [assetReader status]);
+					NSLog(@"reader status: %ld", [self.assetReader status]);
 				}
 			}
 		}
@@ -392,6 +421,33 @@ typedef enum : NSUInteger {
 	[self.controls each:^(NSControl *c) {
 		c.enabled = enabled;
 	}];
+}
+
+- (void)cleanUp
+{
+	[self.imagesQueue removeAllObjects];
+
+	NSDate *endDate = [NSDate date];
+	NSTimeInterval duration = [endDate timeIntervalSinceDate:self.startDate];
+
+	self.internalPartialImg = nil;
+
+	[self.outputAssetWriter finishWritingWithCompletionHandler:^{
+		NSLog(@"Writing finished!");
+	}];
+
+	NSLog(@"Processed %@ frames in %@ seconds, FPS: %@", @(self.currentFrameIndex), @(duration), @(self.currentFrameIndex / duration));
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			self.sourceVideoView.locked = NO;
+			[self.progressIndicator stopAnimation:nil];
+			self.processing = NO;
+			self.startButton.title = @"Start";
+			[self.sourceVideoView updatePreview:self.originalPreviewImage];
+			[self setControlsEnabled:YES];
+		}
+	});
 }
 
 @end
