@@ -16,7 +16,11 @@ Run `pod install` first, then open `Slit-Scan Maker OS X.xcworkspace` in Xcode. 
 
 Select effect type, drag-n-drop video to app window, configure some options (or leave defaults) and push "Start" button"
 
+Supported video file types: `.mov`, `.mp4`, `.m4v`, `.qt`.
+
 Output images and videos are saved to `~/Pictures/Slit-Scan Maker/` (directory is created on app's first run).
+
+Output videos are in `.mov` format.
 
 # Memory consumption note
 
