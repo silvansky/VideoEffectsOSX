@@ -25,3 +25,5 @@ Output videos are in `.mov` format.
 # Memory consumption note
 
 The rolling-shutter effect use a lot of memory. To reduce memory usage use videos of smaller frame size.
+
+For example, if your video stream is 1920x1080 and you start bottom-to-top rolling shutter effect, app will store in memory 1080 raw images of 1920x1080 size. For left-to-right rolling shutter app will store 1920 images.
