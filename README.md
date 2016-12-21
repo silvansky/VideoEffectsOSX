@@ -8,6 +8,12 @@ Current implemented effects:
 * Slit scan with moving slit
 * Rolling shutter
 
+# Rolling Shutter Effect Demo
+
+[![See video on YouTube](https://img.youtube.com/vi/3z9t0iUE2dE/0.jpg)](https://www.youtube.com/watch?v=3z9t0iUE2dE)
+
+Click image to watch the video on YouTube.
+
 # Build
 
 Run `pod install` first, then open `Slit-Scan Maker OS X.xcworkspace` in Xcode. Build and run as usual.
